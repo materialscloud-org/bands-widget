@@ -106,6 +106,7 @@ function getValidPointNames(allData) {
 function BandPlot(divID) {
     this.divID = divID;
     this.allData = [];
+    this.allColorInfo = [];
     // Keep track of the current path to avoid too many refreshes
     this.currentPath = [];
 
@@ -115,7 +116,8 @@ function BandPlot(divID) {
     this.initChart(this.divID);
 
 }
-BandPlot.prototype.addBandStructure = function(bandsData) {
+
+BandPlot.prototype.addBandStructure = function(bandsData, colorInfo) {
     // User needs to call updateBandPlot after this call
 
     // bandData format:
@@ -127,7 +129,18 @@ BandPlot.prototype.addBandStructure = function(bandsData) {
     //     - x HAS an offset! You need to remove it if needed
     //     - values has length numbands * x
 
+    var defaultColors = ['#666666', '#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00'];
+
+    if (typeof(colorInfo) === 'undefined') {
+        // Default colors: blue, red, black
+        var nextIndex = this.allColorInfo.length;
+        var newColor = tinycolor(defaultColors[nextIndex % defaultColors.length]);
+        colorInfo = [newColor.toHexString(), newColor.darken(20).toHexString(), newColor.brighten(20).toHexString()];
+    }
+
+    this.allColorInfo.push(colorInfo);
     this.allData.push(bandsData);
+    
 };
 
 BandPlot.prototype.initChart = function(divID) {
@@ -277,12 +290,10 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
         var thisSegmentLength = null;
         // Check which segment we need to plot
 
-        bandPlotObject.allData.forEach(function(bandsData) {
+        bandPlotObject.allData.forEach(function(bandsData, bandsIdx) {
 
             var segmentInfo = pickSegment(segmentEdges, bandsData.paths);
             if (segmentInfo) {
-
-                console.log("segmentInfo: ", segmentInfo);
 
                 // The segment was found, plot it
                 segmentFoundOnce = true;
@@ -324,7 +335,6 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                     }
                 }
 
-                console.log("thisSegmentLength: ", thisSegmentLength)
                 // If the path has no length (first point and last point coincide)
                 // then I do not print. I check the x value at the last point
                 // of xArray (xArray, in the lines above, is defined so that
@@ -350,18 +360,19 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                                 [xy_point[0] + currentXOffset, xy_point[1]]);
                         });
 
+                        colorInfo = bandPlotObject.allColorInfo[bandsIdx];
                         if (twoBandTypes) {
                             if (band_idx * 2 < numBands) {
                                 // Color for the first half of bands
-                                lineColor = "#B2182B"; // dark red
+                                lineColor = colorInfo[1]; // Up color
                             }
                             else {
                                 // Color for the second half of bands
-                                lineColor = "#444444"; // dark grey
+                                lineColor = colorInfo[2]; // Down color
                             }
                         }
                         else {
-                            lineColor = "#4682B4"; // dark blue
+                            lineColor = colorInfo[0]; // Single color when there is no up/down bands
                         }
 
                         var series = {
@@ -370,7 +381,6 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                             marker: {radius: 0, symbol: "circle"},
                             data: curve
                         }
-                        console.log("series: ", series);
                         bandPlotObject.myChart.addSeries(series, redraw = false);
                     });
                 }
@@ -406,7 +416,12 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
     bandPlotObject.myChart.redraw(); // mush happen before changing ticks, axes, ...
     bandPlotObject.updateTicks(highSymmetryTicks);
     bandPlotObject.myChart.xAxis[0].setExtremes(0, currentXOffset);
-    //bandPlotObject.myChart.yAxis[0].title.text = bandPlotObject.allData[0].Y_label
+    console.log(bandPlotObject.allData[0]);
+    Y_label = bandPlotObject.allData[0].Y_label;
+    if (typeof(Y_label) === 'undefined') {
+        Y_label = 'Bands';
+    }
+    bandPlotObject.myChart.yAxis[0].axisTitle.textSetter(Y_label);
 }
 
 // Update both ticks and vertical lines

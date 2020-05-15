@@ -21,13 +21,13 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths) {
     plots[bandDivId] = {};
     let theBandPlot = new BandPlot(bandDivId);
 
-    console.log("2. bandPlotObject: ", theBandPlot)
-
-    dataFilePaths.forEach(function(dataFilePath) {
+    dataFilePaths.forEach(function(dataFilePath, dataIdx) {
         $.ajax({
             url: dataFilePath,
             async: false,
             success: function (data) {
+                // The color should be the same for all bands even if there are spin up and down, but different
+                // for the two datasets
                 theBandPlot.addBandStructure(data);
             }
         });    
@@ -48,6 +48,6 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths) {
 }
 
 $( document ).ready(function() {
-    bandPlot("band1", "bandPathTextBox1", ["data/382.json", "data/467.json"]);
-    bandPlot("band2", "bandPathTextBox2", ["data/467.json"]);
+    bandPlot("band1", "bandPathTextBox1", ["data/382.json", "data/467.json", "data/291-modified.json"]);
+    bandPlot("band2", "bandPathTextBox2", ["data/467.json", "data/291-modified.json"], 10);
 });
