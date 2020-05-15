@@ -10,39 +10,39 @@ function changeBandPath (textBoxId, plotInfoId) {
 
 function resetDefaultBandPath (textBoxId, plotInfoId) {
     let theTextBox = document.getElementById(textBoxId);
-    theTextBox.value = getPathStringFromPathArray(plots[plotInfoId].jsondata.path);
-    plots[plotInfoId].plotObj.updateBandPlot(plots[plotInfoId].jsondata.path, true);
+    theTextBox.value = getPathStringFromPathArray(plots[plotInfoId].plotObj.getDefaultPath());
+    plots[plotInfoId].plotObj.updateBandPlot(plots[plotInfoId].plotObj.getDefaultPath(), true);
 }
 
-function bandPlot(bandDivId, bandPathTextBoxId, dataFilePath) {
-    $.getJSON(dataFilePath, function (data) {
+function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths) {
+    plots[bandDivId] = {};
+    let theBandPlot = new BandPlot(bandDivId);
 
-        plots[bandDivId] = {};
-
-        plots[bandDivId].jsondata = data;
-
-        let theBandPlot = new BandPlot(bandDivId);
-
-        theBandPlot.setData(data);
-        theBandPlot.updateBandPlot();
-        let theTextBox = document.getElementById(bandPathTextBoxId);
-        theTextBox.value = getPathStringFromPathArray(data.path);
-
-        let helperString = "Use - to define a segment<br>Use | to split the path.<br>Valid point names:<br>";
-        let validPoints = getValidPointNames(data);
-        helperString += validPoints.join(', ');
-
-        plots[bandDivId].plotObj = theBandPlot;
-
-        //theTextBox.tooltip({title: helperString, html: true})
-        //    .tooltip('show'); // Open the tooltip
-
-
+    dataFilePaths.forEach(function(dataFilePath) {
+        $.ajax({
+            url: dataFilePath,
+            async: false,
+            success: function (data) {
+                theBandPlot.addBandStructure(data);
+            }
+        });    
     });
+
+    theBandPlot.updateBandPlot();
+    let theTextBox = document.getElementById(bandPathTextBoxId);
+    theTextBox.value = getPathStringFromPathArray(theBandPlot.getDefaultPath());
+
+    let helperString = "Use - to define a segment<br>Use | to split the path.<br>Valid point names:<br>";
+    let validPoints = getValidPointNames(theBandPlot.allData);
+    helperString += validPoints.join(', ');
+
+    plots[bandDivId].plotObj = theBandPlot;
+
+    //theTextBox.tooltip({title: helperString, html: true})
+    //    .tooltip('show'); // Open the tooltip
 }
 
 $( document ).ready(function() {
-    bandPlot("band1", "bandPathTextBox1", "data/382.json");
-    bandPlot("band2", "bandPathTextBox2", "data/467.json");
+    bandPlot("band1", "bandPathTextBox1", ["data/382.json", "data/467.json"]);
+    bandPlot("band2", "bandPathTextBox2", ["data/467.json"]);
 });
-
