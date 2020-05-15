@@ -49,5 +49,5 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths) {
 
 $( document ).ready(function() {
     bandPlot("band1", "bandPathTextBox1", ["data/382.json", "data/467.json", "data/291-modified.json"]);
-    bandPlot("band2", "bandPathTextBox2", ["data/467.json", "data/291-modified.json"], 10);
+    bandPlot("band2", "bandPathTextBox2", ["data/467.json", "data/291-modified.json"]);
 });

@@ -129,7 +129,7 @@ BandPlot.prototype.addBandStructure = function(bandsData, colorInfo) {
     //     - x HAS an offset! You need to remove it if needed
     //     - values has length numbands * x
 
-    var defaultColors = ['#666666', '#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00'];
+    var defaultColors = ['#555555', '#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00'];
 
     if (typeof(colorInfo) === 'undefined') {
         // Default colors: blue, red, black
