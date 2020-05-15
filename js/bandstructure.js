@@ -88,13 +88,12 @@ function getPathArrayFromPathString (pathString) {
 // Utility function to get all point labels existing in the data
 function getValidPointNames(allData) {
     var validNames = [];
-    console.log(allData);
     allData.forEach(function(data) {
         if (data.hasOwnProperty("paths")) {
             data.paths.forEach(function(segment) {
                 validNames.push(segment.from);
                 validNames.push(segment.to);
-            });    
+            });
         }
     });
     var uniqueNames = Array.from(new Set(validNames));
@@ -109,6 +108,12 @@ function BandPlot(divID) {
     this.allData = [];
     // Keep track of the current path to avoid too many refreshes
     this.currentPath = [];
+
+    if (typeof(this.myChart) != "undefined") {
+        this.myChart.destroy();
+    }
+    this.initChart(this.divID);
+
 }
 BandPlot.prototype.addBandStructure = function(bandsData) {
     // User needs to call updateBandPlot after this call
@@ -123,12 +128,6 @@ BandPlot.prototype.addBandStructure = function(bandsData) {
     //     - values has length numbands * x
 
     this.allData.push(bandsData);
-    if (typeof(this.myChart) != "undefined") {
-        this.myChart.destroy();
-    }
-    this.initChart(this.divID);
-    // Keep track of the current path to avoid too many refreshes
-    this.currentPath = [];
 };
 
 BandPlot.prototype.initChart = function(divID) {
@@ -277,12 +276,17 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
         var segmentFoundOnce = false;
         var thisSegmentLength = null;
         // Check which segment we need to plot
+
         bandPlotObject.allData.forEach(function(bandsData) {
+
             var segmentInfo = pickSegment(segmentEdges, bandsData.paths);
             if (segmentInfo) {
+
+                console.log("segmentInfo: ", segmentInfo);
+
                 // The segment was found, plot it
                 segmentFoundOnce = true;
-                
+
                 // get the x array once, it's the same for all
                 // make sure it starts from zero, and possibly reverse it if needed
                 // (still will be from zero to a maximum value)
@@ -298,15 +302,15 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                         xArray.push(segmentInfo.segment.x[i] - segmentInfo.segment.x[0]);
                     }
                 }
-    
+
                 // Should I use two colors? (By default, no). This info is returned
                 // (in new versions of AiiDA) for each segment
                 twoBandTypes = segmentInfo.segment.two_band_types || false;
                 numBands = segmentInfo.segment.values.length;
-    
+
                 if (thisSegmentLength === null) {
                     // I set the length from the first segment I find
-                    var thisSegmentLength = xArray[xArray.length-1];
+                    thisSegmentLength = xArray[xArray.length-1];
                 }
 
                 // I want all bands in this segment to have the same length;
@@ -320,17 +324,18 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                     }
                 }
 
+                console.log("thisSegmentLength: ", thisSegmentLength)
                 // If the path has no length (first point and last point coincide)
                 // then I do not print. I check the x value at the last point
                 // of xArray (xArray, in the lines above, is defined so that
                 // xArray[0] = 0 and xArray[xArray.length-1] is the total
                 // length of the array
                 if (thisSegmentLength > 0) {
-    
+
                     // Plot each band of the segment
                     segmentInfo.segment.values.forEach(function (band, band_idx) {
                         var curve = [];
-    
+
                         if (segmentInfo.reverse) {
                             // need to use slice because reverse works in place and
                             // would modify the original array
@@ -339,12 +344,12 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                         else {
                             var theBand = band;
                         }
-    
+
                         zip(xArray, theBand).forEach(function (xy_point) {
                             curve.push(
                                 [xy_point[0] + currentXOffset, xy_point[1]]);
                         });
-    
+
                         if (twoBandTypes) {
                             if (band_idx * 2 < numBands) {
                                 // Color for the first half of bands
@@ -358,13 +363,14 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                         else {
                             lineColor = "#4682B4"; // dark blue
                         }
-    
+
                         var series = {
                             name: segmentEdges[0] + "-" + segmentEdges[1] + "." + band_idx,
                             color: lineColor,
                             marker: {radius: 0, symbol: "circle"},
                             data: curve
                         }
+                        console.log("series: ", series);
                         bandPlotObject.myChart.addSeries(series, redraw = false);
                     });
                 }
@@ -376,7 +382,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
             else {
                 // segment is null, no segment was found for this specific bandaData - don't do anything
             }
-    
+
         });
 
         // Once I processed *all* band series, I apply a shift to the currentXOffset
@@ -395,14 +401,13 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
         highSymmetryTicks.push([currentXOffset, segmentEdges[1]]);
 
     });
+
     // Reset the ticks etc.
     bandPlotObject.myChart.redraw(); // mush happen before changing ticks, axes, ...
     bandPlotObject.updateTicks(highSymmetryTicks);
     bandPlotObject.myChart.xAxis[0].setExtremes(0, currentXOffset);
-    bandPlotObject.myChart.yAxis[0].axisTitle.attr({
-        text: bandPlotObject.data.Y_label,
-    });
-},
+    //bandPlotObject.myChart.yAxis[0].title.text = bandPlotObject.allData[0].Y_label
+}
 
 // Update both ticks and vertical lines
 // ticks should be in the format [xpos, label]
@@ -468,7 +473,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                     // there is G: it's the legacy format
                     legacyFormat = true;
                 }
-            else {
+                else {
                     // There is neither 'GAMMA' nor G: no idea, I assume the new format
                     legacyFormat = false;
                 }

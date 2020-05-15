@@ -1,6 +1,7 @@
 
 let plots = {};
 
+//It updates the band graph for user input.
 function changeBandPath (textBoxId, plotInfoId) {
     let theTextBox = document.getElementById(textBoxId);
     let string = theTextBox.value;
@@ -8,15 +9,19 @@ function changeBandPath (textBoxId, plotInfoId) {
     plots[plotInfoId].plotObj.updateBandPlot(finalPath);
 }
 
+//It updates the band graph for to its default path.
 function resetDefaultBandPath (textBoxId, plotInfoId) {
     let theTextBox = document.getElementById(textBoxId);
     theTextBox.value = getPathStringFromPathArray(plots[plotInfoId].plotObj.getDefaultPath());
     plots[plotInfoId].plotObj.updateBandPlot(plots[plotInfoId].plotObj.getDefaultPath(), true);
 }
 
+// get json data and create band plot
 function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths) {
     plots[bandDivId] = {};
     let theBandPlot = new BandPlot(bandDivId);
+
+    console.log("2. bandPlotObject: ", theBandPlot)
 
     dataFilePaths.forEach(function(dataFilePath) {
         $.ajax({
