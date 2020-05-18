@@ -21,7 +21,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-6">
-          <h3>Band 1</h3>
+          <h3>1. Single band structure with default colors</h3>
 
           <div id="band1">
           </div>
@@ -38,7 +38,7 @@
         </div>
 
         <div class="col-md-6">
-          <h3>Band 2</h3>
+          <h3>2. Three band structures with missing segments and with default colors</h3>
 
           <div id="band2">
           </div>
@@ -50,6 +50,46 @@
           </p>
           <button type="button" class="btn btn-primary btn-md reset-path-btn" title="Reset to default path"
                   onclick="resetDefaultBandPath('bandPathTextBox2', 'band2')">
+            Reset default path
+          </button>
+        </div>
+      </div>
+
+      <br>
+      <br>
+      <br>
+
+      <div class="row">
+        <div class="col-md-6">
+          <h3>3. Two band structures with default colors</h3>
+
+          <div id="band3">
+          </div>
+
+          <p class="input-group input-group-div">
+            <span class="input-group-addon">Edit the path: </span>
+            <input id="bandPathTextBox3" class="input-group form-control input-path"
+                   autocomplete="off" onkeyup="changeBandPath('bandPathTextBox3', 'band3')">
+          </p>
+          <button type="button" class="btn btn-primary btn-md reset-path-btn" title="Reset to default path"
+                  onclick="resetDefaultBandPath('bandPathTextBox3', 'band3')">
+            Reset default path
+          </button>
+        </div>
+
+        <div class="col-md-6">
+          <h3>4. Two band structures where color is passed as an argument</h3>
+
+          <div id="band4">
+          </div>
+
+          <p class="input-group input-group-div">
+            <span class="input-group-addon">Edit the path: </span>
+            <input id="bandPathTextBox4" class="input-group form-control input-path"
+                   autocomplete="off" onkeyup="changeBandPath('bandPathTextBox4', 'band4')">
+          </p>
+          <button type="button" class="btn btn-primary btn-md reset-path-btn" title="Reset to default path"
+                  onclick="resetDefaultBandPath('bandPathTextBox4', 'band4')">
             Reset default path
           </button>
         </div>

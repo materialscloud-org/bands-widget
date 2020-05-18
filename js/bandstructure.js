@@ -1,34 +1,38 @@
-/*
- Band structure
-
- Author: Giovanni Pizzi (2018)
-
- Lincense: The MIT License (MIT)
-
- Copyright (c), 2018, ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE
- (Theory and Simulation of Materials (THEOS) and National Centre for
- Computational Design and Discovery of Novel Materials (NCCR MARVEL)),
- Switzerland.
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
-
-*/
+/**
+ * Display Band structure(s) in single plot
+ *
+ * @author Giovanni Pizzi, EPFL (2018-2020)
+ * @author Snehal Kumbhar, EPFL (2020)
+ *
+ * @version 1.0 First release to plot single band structure
+ * @version 1.1 Added support to plot multiple band structures in single plot
+ *
+ * @license
+ * The MIT License (MIT)
+ *
+ * Copyright (c), 2018, ECOLE POLYTECHNIQUE FEDERALE DE LAUSANNE
+ * (Theory and Simulation of Materials (THEOS) and National Centre for
+ * Computational Design and Discovery of Novel Materials (NCCR MARVEL)),
+ * Switzerland.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
 
 // Utility 'zip' function analogous to python's, from
 // https://stackoverflow.com/questions/4856717
@@ -129,10 +133,15 @@ BandPlot.prototype.addBandStructure = function(bandsData, colorInfo) {
     //     - x HAS an offset! You need to remove it if needed
     //     - values has length numbands * x
 
+    // colorInfo format:
+    // It is array of 3 colors: [Single, Up, Down]
+    //  - Single' color will be used when there is no up/down bands
+    //  - 'Up' color for spin up bands
+    //  - 'Down' color of spin down bands
+
     var defaultColors = ['#555555', '#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00'];
 
     if (typeof(colorInfo) === 'undefined') {
-        // Default colors: blue, red, black
         var nextIndex = this.allColorInfo.length;
         var newColor = tinycolor(defaultColors[nextIndex % defaultColors.length]);
         colorInfo = [newColor.toHexString(), newColor.darken(20).toHexString(), newColor.brighten(20).toHexString()];
@@ -157,10 +166,6 @@ BandPlot.prototype.initChart = function(divID) {
         }, // will be replaced
         yAxis: { plotLines: [],
             title: { text: ' ' , useHTML: true},// Leave text non-empty by default so it creates the object
-            plotLines: [
-                // uncomment to have a horizontal line at E=0
-                // {value: 0, color: '#000000', width: 2}
-            ]
         },
         tooltip: { formatter: function(x) { return 'y='+Math.round(this.y*100)/100 + "<br>Drag to zoom" } },
         legend: { enabled: false },
@@ -176,15 +181,7 @@ BandPlot.prototype.initChart = function(divID) {
                             lineWidth: 0 }
                     }
                 },
-                cursor: 'pointer',
-                /* allowPointSelect: true,
-                 point: {
-                 events: {
-                 // select: select_event,
-                 // unselect: unselect_event,
-                 click: click_event
-                 }
-                 } */
+                cursor: 'pointer'
             }
         }
     };
