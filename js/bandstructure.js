@@ -149,7 +149,7 @@ BandPlot.prototype.addBandStructure = function(bandsData, colorInfo) {
 
     this.allColorInfo.push(colorInfo);
     this.allData.push(bandsData);
-    
+
 };
 
 BandPlot.prototype.initChart = function(divID) {
@@ -286,6 +286,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
 
         var segmentFoundOnce = false;
         var thisSegmentLength = null;
+        var i;
         // Check which segment we need to plot
 
         bandPlotObject.allData.forEach(function(bandsData, bandsIdx) {
@@ -302,12 +303,12 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                 var xArray = [];
                 var xLength = segmentInfo.segment.x.length;
                 if (segmentInfo.reverse) {
-                    for (var i=segmentInfo.segment.x.length - 1; i>=0; i--) {
+                    for (i=segmentInfo.segment.x.length - 1; i>=0; i--) {
                         xArray.push(segmentInfo.segment.x[xLength-1] - segmentInfo.segment.x[i]);
                     }
                 }
                 else {
-                    for (var i=0; i<xLength; i++) {
+                    for (i=0; i<xLength; i++) {
                         xArray.push(segmentInfo.segment.x[i] - segmentInfo.segment.x[0]);
                     }
                 }
@@ -328,7 +329,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                 var scalingFactor = 1.0;
                 if (xArray[xArray.length-1] > 0) {
                     scalingFactor = thisSegmentLength / xArray[xArray.length-1];
-                    for (var i=0; i<xArray.length; i++) {
+                    for (i=0; i<xArray.length; i++) {
                         xArray[i] *= scalingFactor;
                     }
                 }
@@ -425,155 +426,156 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
 
 // Update both ticks and vertical lines
 // ticks should be in the format [xpos, label]
-    BandPlot.prototype.updateTicks = function(ticks) {
-        // I save the 'this' instance for later reference
-        var bandPlotObject = this;
+BandPlot.prototype.updateTicks = function(ticks) {
+    // I save the 'this' instance for later reference
+    var bandPlotObject = this;
+    var i;
 
-        //////////////////// Utility functions ///////////////////
-        var labelFormatterBuilder = function(allData, ticks) {
-            // Returns a function that is compatible with a
-            // labelFormatter of highcharts.
-            // In particular matches the x value with the label
-            // also converts strings to prettified versions
+    //////////////////// Utility functions ///////////////////
+    var labelFormatterBuilder = function(allData, ticks) {
+        // Returns a function that is compatible with a
+        // labelFormatter of highcharts.
+        // In particular matches the x value with the label
+        // also converts strings to prettified versions
 
-            // pass both all the data (allData), used for the heuristics below
-            // to determine the format for the prettifier, and the ticks array
+        // pass both all the data (allData), used for the heuristics below
+        // to determine the format for the prettifier, and the ticks array
 
-            var label_info = {};
-            for (var i=0; i<ticks.length; i++) {
-                label_info[ticks[i][0]] = ticks[i][1];
+        var label_info = {};
+        for (i=0; i<ticks.length; i++) {
+            label_info[ticks[i][0]] = ticks[i][1];
+        }
+
+        // function to prettify strings (in HTML) with the new format defined in SeeK-path
+        var prettifyLabelSeekpathFormat = function(label) {
+            label = label.replace(/GAMMA/gi, "&Gamma;");
+            label = label.replace(/DELTA/gi, "&Delta;");
+            label = label.replace(/SIGMA/gi, "&Sigma;");
+            label = label.replace(/LAMBDA/gi, "&Lambda;");
+            label = label.replace(/\-/gi, "&mdash;");
+            label = label.replace(/_(.)/gi, function(match, p1, offset, string) {
+                return "<sub>" + p1 + "</sub>";
+            });
+            return label;
+        };
+        // function to prettify strings (in HTML) with the old legacy format defined in AiiDA
+        var prettifyLabelLegacyFormat = function(label) {
+            // Replace G with Gamma
+            if (label == 'G') {
+                label = "&Gamma;";
             }
+            label = label.replace(/\-/gi, "&mdash;");
+            // Replace digits with their lower-case version
+            label = label.replace(/(\d+)/gi, function(match, p1, offset, string) {
+                return "<sub>" + p1 + "</sub>";
+            });
+            return label;
+        };
 
-            // function to prettify strings (in HTML) with the new format defined in SeeK-path
-            var prettifyLabelSeekpathFormat = function(label) {
-                label = label.replace(/GAMMA/gi, "&Gamma;");
-                label = label.replace(/DELTA/gi, "&Delta;");
-                label = label.replace(/SIGMA/gi, "&Sigma;");
-                label = label.replace(/LAMBDA/gi, "&Lambda;");
-                label = label.replace(/\-/gi, "&mdash;");
-                label = label.replace(/_(.)/gi, function(match, p1, offset, string) {
-                    return "<sub>" + p1 + "</sub>";
-                });
-                return label;
-            };
-            // function to prettify strings (in HTML) with the old legacy format defined in AiiDA
-            var prettifyLabelLegacyFormat = function(label) {
-                // Replace G with Gamma
-                if (label == 'G') {
-                    label = "&Gamma;";
-                }
-                label = label.replace(/\-/gi, "&mdash;");
-                // Replace digits with their lower-case version
-                label = label.replace(/(\d+)/gi, function(match, p1, offset, string) {
-                    return "<sub>" + p1 + "</sub>";
-                });
-                return label;
-            };
-
-            // Some heuristics to decide the prettify format
-            // If there is "GAMMA", it is the new format
-            // If there is NOT "GAMMA" and there is "G", it's the legacy format
-            // If there is not even "G", then to be safe I use the seekpath format
-            // that for instance does not make numbers subscripts by default
-            var validNames = getValidPointNames([allData]);
-            var legacyFormat = false; // some default, should never be used anyway
-            if (validNames.findIndex(function(label) {return label == "GAMMA";}) != -1) {
-                // There is 'GAMMA': it is for sure the new format
+        // Some heuristics to decide the prettify format
+        // If there is "GAMMA", it is the new format
+        // If there is NOT "GAMMA" and there is "G", it's the legacy format
+        // If there is not even "G", then to be safe I use the seekpath format
+        // that for instance does not make numbers subscripts by default
+        var validNames = getValidPointNames([allData]);
+        var legacyFormat = false; // some default, should never be used anyway
+        if (validNames.findIndex(function(label) {return label == "GAMMA";}) != -1) {
+            // There is 'GAMMA': it is for sure the new format
+            legacyFormat = false;
+        }
+        else {
+            // GAMMA is not there
+            if (validNames.findIndex(function(label) { return label == "G";}) != -1) {
+                // there is G: it's the legacy format
+                legacyFormat = true;
+            }
+            else {
+                // There is neither 'GAMMA' nor G: no idea, I assume the new format
                 legacyFormat = false;
             }
-            else {
-                // GAMMA is not there
-                if (validNames.findIndex(function(label) { return label == "G";}) != -1) {
-                    // there is G: it's the legacy format
-                    legacyFormat = true;
-                }
-                else {
-                    // There is neither 'GAMMA' nor G: no idea, I assume the new format
-                    legacyFormat = false;
-                }
-            }
-
-            var prettifyLabel;
-            if (legacyFormat) {
-                prettifyLabel = prettifyLabelLegacyFormat;
-            }
-            else {
-                prettifyLabel = prettifyLabelSeekpathFormat;
-            }
-
-            // return the prettifier function
-            return function() {
-                // If not found returns 'undefined' that does not print anything
-                raw_label = label_info[this.value];
-                if (typeof(raw_label) === 'undefined') {
-                    return raw_label;
-                }
-                label = prettifyLabel(raw_label);
-                return label;
-            };
-        };
-
-        // function that returns a function compatible with the tickPositioner of
-        // Highcharts, returning the position of the ticks
-        var tickPositionerBuilder = function(ticks) {
-            var theTickPos = [];
-            for (var i=0; i<ticks.length; i++) {
-                theTickPos.push(ticks[i][0]);
-            }
-            return function() {
-                // Important to make a copy, the library modifies the array
-                var copyPositions = [];
-                theTickPos.forEach(function(elem) {
-                    copyPositions.push(elem);
-                });
-                return copyPositions;
-            };
-        };
-        ////////////////// END OF UTILITY FUNCTIONS ///////////////////
-
-        // First, clean the plot lines (vertical lines) and the old ticks
-        bandPlotObject.myChart.xAxis[0].removePlotLine();
-        for (var i=bandPlotObject.myChart.xAxis[0].ticks.length - 1; i>=0; i--) {
-            bandPlotObject.myChart.xAxis[0].ticks[i].remove();
         }
 
-        // Compute the tick positions
-        var plotLines = [];
-        var tickPos = [];
-        for (var i=0; i<ticks.length ; i++ ) {
-            tickPos.push(ticks[i][0]);
-            plotLines.push({
-                value: ticks[i][0],
-                color: '#CCCCCC',
-                width: 1
-            });
+        var prettifyLabel;
+        if (legacyFormat) {
+            prettifyLabel = prettifyLabelLegacyFormat;
+        }
+        else {
+            prettifyLabel = prettifyLabelSeekpathFormat;
         }
 
-        // reset positions (in particular to set the tickPositioner)
-        bandPlotObject.myChart.xAxis[0].setOptions(
-            {
-                plotLines: [],
-                lineWidth: 0,
-                minorGridLineWidth: 0,
-                lineColor: 'transparent',
-                minorTickLength: 0,
-                tickLength: 0,
-                tickPositioner: tickPositionerBuilder(ticks),
-                labels: {
-                    useHTML: true,
-                    align: "center",
-                    style: { fontSize:'16px' }
-                }
-            });
-        // set also the labelFormatter
-        bandPlotObject.myChart.xAxis[0].labelFormatter = labelFormatterBuilder(bandPlotObject.allData, ticks);
-        bandPlotObject.myChart.xAxis[0].setTickPositions();
-        ax = bandPlotObject.myChart.xAxis[0];
-        bandPlotObject.myChart.render();
-        // Important! Do after the render. Put back new vertical plotlines
-        plotLines.forEach(function (plotLine) {
-            bandPlotObject.myChart.xAxis[0].addPlotLine(plotLine);
-        });
+        // return the prettifier function
+        return function() {
+            // If not found returns 'undefined' that does not print anything
+            raw_label = label_info[this.value];
+            if (typeof(raw_label) === 'undefined') {
+                return raw_label;
+            }
+            label = prettifyLabel(raw_label);
+            return label;
+        };
     };
+
+    // function that returns a function compatible with the tickPositioner of
+    // Highcharts, returning the position of the ticks
+    var tickPositionerBuilder = function(ticks) {
+        var theTickPos = [];
+        for (var i=0; i<ticks.length; i++) {
+            theTickPos.push(ticks[i][0]);
+        }
+        return function() {
+            // Important to make a copy, the library modifies the array
+            var copyPositions = [];
+            theTickPos.forEach(function(elem) {
+                copyPositions.push(elem);
+            });
+            return copyPositions;
+        };
+    };
+    ////////////////// END OF UTILITY FUNCTIONS ///////////////////
+
+    // First, clean the plot lines (vertical lines) and the old ticks
+    bandPlotObject.myChart.xAxis[0].removePlotLine();
+    for (i=bandPlotObject.myChart.xAxis[0].ticks.length - 1; i>=0; i--) {
+        bandPlotObject.myChart.xAxis[0].ticks[i].remove();
+    }
+
+    // Compute the tick positions
+    var plotLines = [];
+    var tickPos = [];
+    for (i=0; i<ticks.length ; i++ ) {
+        tickPos.push(ticks[i][0]);
+        plotLines.push({
+            value: ticks[i][0],
+            color: '#CCCCCC',
+            width: 1
+        });
+    }
+
+    // reset positions (in particular to set the tickPositioner)
+    bandPlotObject.myChart.xAxis[0].setOptions(
+        {
+            plotLines: [],
+            lineWidth: 0,
+            minorGridLineWidth: 0,
+            lineColor: 'transparent',
+            minorTickLength: 0,
+            tickLength: 0,
+            tickPositioner: tickPositionerBuilder(ticks),
+            labels: {
+                useHTML: true,
+                align: "center",
+                style: { fontSize:'16px' }
+            }
+        });
+    // set also the labelFormatter
+    bandPlotObject.myChart.xAxis[0].labelFormatter = labelFormatterBuilder(bandPlotObject.allData, ticks);
+    bandPlotObject.myChart.xAxis[0].setTickPositions();
+    ax = bandPlotObject.myChart.xAxis[0];
+    bandPlotObject.myChart.render();
+    // Important! Do after the render. Put back new vertical plotlines
+    plotLines.forEach(function (plotLine) {
+        bandPlotObject.myChart.xAxis[0].addPlotLine(plotLine);
+    });
+};
 
 
