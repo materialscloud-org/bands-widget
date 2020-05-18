@@ -1,17 +1,17 @@
 
-let plots = {};
+plots = {};
 
 //It updates the band graph for user input.
 function changeBandPath (textBoxId, plotInfoId) {
-    let theTextBox = document.getElementById(textBoxId);
-    let string = theTextBox.value;
-    let finalPath = getPathArrayFromPathString(string);
+    var theTextBox = document.getElementById(textBoxId);
+    var string = theTextBox.value;
+    var finalPath = getPathArrayFromPathString(string);
     plots[plotInfoId].plotObj.updateBandPlot(finalPath);
 }
 
 //It updates the band graph for to its default path.
 function resetDefaultBandPath (textBoxId, plotInfoId) {
-    let theTextBox = document.getElementById(textBoxId);
+    var theTextBox = document.getElementById(textBoxId);
     theTextBox.value = getPathStringFromPathArray(plots[plotInfoId].plotObj.getDefaultPath());
     plots[plotInfoId].plotObj.updateBandPlot(plots[plotInfoId].plotObj.getDefaultPath(), true);
 }
@@ -21,8 +21,8 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
     plots[bandDivId] = {};
 
     // create band plot object
-    let theBandPlot = new BandPlot(bandDivId);
-    let colorDict;
+    var theBandPlot = new BandPlot(bandDivId);
+    var colorDict;
 
     // add data for every band structure
     dataFilePaths.forEach(function(dataFilePath, dataIdx) {
@@ -39,7 +39,7 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
                 //  - 'Up' color for spin up bands
                 //  - 'Down' color of spin down bands
 
-                let colorDict;
+                var colorDict;
                 if(colorInfo !== undefined) {
                     var newColor = tinycolor(colorInfo[dataIdx]);
                     colorDict = [newColor.toHexString(), newColor.darken(20).toHexString(), newColor.brighten(20).toHexString()];
@@ -53,11 +53,11 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
     // update band structure data for plotting
     theBandPlot.updateBandPlot();
 
-    let theTextBox = document.getElementById(bandPathTextBoxId);
+    var theTextBox = document.getElementById(bandPathTextBoxId);
     theTextBox.value = getPathStringFromPathArray(theBandPlot.getDefaultPath());
 
-    let helperString = "Use - to define a segment<br>Use | to split the path.<br>Valid point names:<br>";
-    let validPoints = getValidPointNames(theBandPlot.allData);
+    var helperString = "Use - to define a segment<br>Use | to split the path.<br>Valid point names:<br>";
+    var validPoints = getValidPointNames(theBandPlot.allData);
     helperString += validPoints.join(', ');
 
     plots[bandDivId].plotObj = theBandPlot;
@@ -72,7 +72,7 @@ $( document ).ready(function() {
     bandPlot("band3", "bandPathTextBox3", ["data/291-modified.json", "data/467.json"]);
 
     // pass colorInfo to plot bands
-    var colorInfo = ["#555555"];
+    var colorInfo = ["#e41a1c", tinycolor("#e41a1c").darken(20).toHexString()];
     bandPlot("band4", "bandPathTextBox4", ["data/291-modified.json", "data/467.json"], colorInfo);
 
 });

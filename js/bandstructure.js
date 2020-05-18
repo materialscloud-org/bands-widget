@@ -38,23 +38,23 @@
 // https://stackoverflow.com/questions/4856717
 var zip = function () {
     var args = [].slice.call(arguments);
-    var shortest = args.length==0 ? [] : args.reduce(function(a,b){
-        return a.length<b.length ? a : b
+    var shortest = args.length === 0 ? [] : args.reduce(function(a,b){
+        return a.length<b.length ? a : b;
     });
 
     return shortest.map(function(_,i){
-        return args.map(function(array){return array[i]})
+        return args.map(function(array){return array[i];});
     });
-}
+};
 
 // Utility function to convert a string in a array describing a path
 function getPathStringFromPathArray (path) {
     var string = [];
     var lastPoint = "";
     path.forEach(function(thisPath) {
-        if (string.length == 0) {
+        if (string.length === 0) {
             string += thisPath[0];
-            string += "-"
+            string += "-";
             string += thisPath[1];
         }
         else {
@@ -79,13 +79,13 @@ function getPathArrayFromPathString (pathString) {
         // Split by dash
         pointsStrings = stringPiece.split('-');
         // remove unneeded spaces, remove empty items (so e.g. X--Y still works as X-Y)
-        pointsTrimmedStrings = pointsStrings.map(function(pointName) { return pointName.trim()});
-        points = pointsTrimmedStrings.filter(function(pointName) { return pointName != ""});
+        pointsTrimmedStrings = pointsStrings.map(function(pointName) { return pointName.trim();});
+        points = pointsTrimmedStrings.filter(function(pointName) { return pointName !== "";});
 
         zip(points.slice(0,points.length-1), points.slice(1)).forEach(function(pair) {
             finalPath.push([pair[0], pair[1]]);
-        })
-    })
+        });
+    });
     return finalPath;
 }
 
@@ -157,7 +157,7 @@ BandPlot.prototype.initChart = function(divID) {
         chart: { type: 'line',
             zoomType: 'xy' },
         credits: {
-            enabled: false,
+            enabled: false
         },
         title: { text: '' },
         xAxis: {
@@ -165,9 +165,9 @@ BandPlot.prototype.initChart = function(divID) {
             lineWidth: 0
         }, // will be replaced
         yAxis: { plotLines: [],
-            title: { text: ' ' , useHTML: true},// Leave text non-empty by default so it creates the object
+            title: { text: ' ' , useHTML: true}// Leave text non-empty by default so it creates the object
         },
-        tooltip: { formatter: function(x) { return 'y='+Math.round(this.y*100)/100 + "<br>Drag to zoom" } },
+        tooltip: { formatter: function(x) { return 'y='+Math.round(this.y*100)/100 + "<br>Drag to zoom"; } },
         legend: { enabled: false },
         series: [],
         plotOptions: {
@@ -191,19 +191,20 @@ BandPlot.prototype.initChart = function(divID) {
 
 BandPlot.prototype.getDefaultPath = function() {
     if (this.allData.length > 0) {
-        return currentPathSpecification = this.allData[0].path; // use the default path from the first band structure
+        currentPathSpecification = this.allData[0].path;
+        return currentPathSpecification; // use the default path from the first band structure
     }
     else {
         return [];
     }
-}
+};
 
 BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
 
     // used later to reference the object inside subfunctions
     var bandPlotObject = this;
 
-    if(forceRedraw == undefined)
+    if(forceRedraw === undefined)
         forceRedraw = false;
 
     var emptyOffset = 0.1; // used when a segment is missing
@@ -248,14 +249,14 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
         for (var i=0; i < paths.length; i++) {
             var path=paths[i];
             if ((path.from == segmentEdges[0]) && (path.to == segmentEdges[1])) {
-                return {'segment': path, 'reverse': false}
+                return {'segment': path, 'reverse': false};
             }
             else if ((path.from == segmentEdges[1]) && (path.to == segmentEdges[0])) {
-                return {'segment': path, 'reverse': true}
+                return {'segment': path, 'reverse': true};
             }
         }
         return null;
-    }
+    };
 
     // Clean the plot removing the old bands
     for (var i = bandPlotObject.myChart.series.length - 1; i>=0 ; i--) {
@@ -263,7 +264,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
     }
 
     // Variable to keep track of the current position along x
-    var currentXOffset = 0.;
+    var currentXOffset = 0.0;
 
     // Array that will contain [position, label] for each high-symmetry point encountered
     highSymmetryTicks = [];
@@ -271,7 +272,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
     // Plot each of the segments
     currentPathSpecification.forEach(function(segmentEdges, segment_idx) {
         // Add a new high-symmetry point, if needed
-        if (highSymmetryTicks.length == 0) {
+        if (highSymmetryTicks.length === 0) {
             // First segment, add always
             highSymmetryTicks.push([currentXOffset, segmentEdges[0]]);
         }
@@ -324,7 +325,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                 // I want all bands in this segment to have the same length;
                 // For the first band scalingFactor is ALWAYS 1, for the rest might
                 // be different and will be used to rescale the x axis.
-                var scalingFactor = 1.;
+                var scalingFactor = 1.0;
                 if (xArray[xArray.length-1] > 0) {
                     scalingFactor = thisSegmentLength / xArray[xArray.length-1];
                     for (var i=0; i<xArray.length; i++) {
@@ -342,14 +343,15 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                     // Plot each band of the segment
                     segmentInfo.segment.values.forEach(function (band, band_idx) {
                         var curve = [];
+                        var theBand;
 
                         if (segmentInfo.reverse) {
                             // need to use slice because reverse works in place and
                             // would modify the original array
-                            var theBand = band.slice().reverse();
+                            theBand = band.slice().reverse();
                         }
                         else {
-                            var theBand = band;
+                            theBand = band;
                         }
 
                         zip(xArray, theBand).forEach(function (xy_point) {
@@ -377,7 +379,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                             color: lineColor,
                             marker: {radius: 0, symbol: "circle"},
                             data: curve
-                        }
+                        };
                         bandPlotObject.myChart.addSeries(series, redraw = false);
                     });
                 }
@@ -419,7 +421,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
         Y_label = 'Bands';
     }
     bandPlotObject.myChart.yAxis[0].axisTitle.textSetter(Y_label);
-}
+};
 
 // Update both ticks and vertical lines
 // ticks should be in the format [xpos, label]
@@ -450,8 +452,8 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                 label = label.replace(/LAMBDA/gi, "&Lambda;");
                 label = label.replace(/\-/gi, "&mdash;");
                 label = label.replace(/_(.)/gi, function(match, p1, offset, string) {
-                    return "<sub>" + p1 + "</sub>"
-                })
+                    return "<sub>" + p1 + "</sub>";
+                });
                 return label;
             };
             // function to prettify strings (in HTML) with the old legacy format defined in AiiDA
@@ -463,8 +465,8 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                 label = label.replace(/\-/gi, "&mdash;");
                 // Replace digits with their lower-case version
                 label = label.replace(/(\d+)/gi, function(match, p1, offset, string) {
-                    return "<sub>" + p1 + "</sub>"
-                })
+                    return "<sub>" + p1 + "</sub>";
+                });
                 return label;
             };
 
@@ -475,13 +477,13 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
             // that for instance does not make numbers subscripts by default
             var validNames = getValidPointNames([allData]);
             var legacyFormat = false; // some default, should never be used anyway
-            if (validNames.findIndex(function(label) {return label == "GAMMA"}) != -1) {
+            if (validNames.findIndex(function(label) {return label == "GAMMA";}) != -1) {
                 // There is 'GAMMA': it is for sure the new format
                 legacyFormat = false;
             }
             else {
                 // GAMMA is not there
-                if (validNames.findIndex(function(label) { return label == "G"}) != -1) {
+                if (validNames.findIndex(function(label) { return label == "G";}) != -1) {
                     // there is G: it's the legacy format
                     legacyFormat = true;
                 }
@@ -491,11 +493,12 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                 }
             }
 
+            var prettifyLabel;
             if (legacyFormat) {
-                var prettifyLabel = prettifyLabelLegacyFormat;
+                prettifyLabel = prettifyLabelLegacyFormat;
             }
             else {
-                var prettifyLabel = prettifyLabelSeekpathFormat;
+                prettifyLabel = prettifyLabelSeekpathFormat;
             }
 
             // return the prettifier function
@@ -507,7 +510,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                 }
                 label = prettifyLabel(raw_label);
                 return label;
-            }
+            };
         };
 
         // function that returns a function compatible with the tickPositioner of
@@ -522,14 +525,14 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                 var copyPositions = [];
                 theTickPos.forEach(function(elem) {
                     copyPositions.push(elem);
-                })
+                });
                 return copyPositions;
-            }
-        }
+            };
+        };
         ////////////////// END OF UTILITY FUNCTIONS ///////////////////
 
         // First, clean the plot lines (vertical lines) and the old ticks
-        bandPlotObject.myChart.xAxis[0].removePlotLine()
+        bandPlotObject.myChart.xAxis[0].removePlotLine();
         for (var i=bandPlotObject.myChart.xAxis[0].ticks.length - 1; i>=0; i--) {
             bandPlotObject.myChart.xAxis[0].ticks[i].remove();
         }
@@ -543,7 +546,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                 value: ticks[i][0],
                 color: '#CCCCCC',
                 width: 1
-            })
+            });
         }
 
         // reset positions (in particular to set the tickPositioner)

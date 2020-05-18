@@ -1,0 +1,9 @@
+{
+    "name": "mcloud-bands-widget",
+    "repository": "https://github.com/materialscloud-org/mcloud-bands-widget.git",
+    "version": "1.1",
+    "description": "It is a small library to plot single/multiple bands structures together in single plot.",
+    "display-name": "Materials Cloud bands structure widget",
+    "license": "MIT",
+    "author": "Materials Cloud team <info@materialscloud.org>"
+}
