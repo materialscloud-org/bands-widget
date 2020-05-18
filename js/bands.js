@@ -43,8 +43,8 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths) {
 
     plots[bandDivId].plotObj = theBandPlot;
 
-    //theTextBox.tooltip({title: helperString, html: true})
-    //    .tooltip('show'); // Open the tooltip
+    $(theTextBox).data('bs.tooltip', false).tooltip({title: helperString, html: true})
+                            .tooltip('show'); // Open the tooltip
 }
 
 $( document ).ready(function() {

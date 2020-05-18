@@ -416,7 +416,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
     bandPlotObject.myChart.redraw(); // mush happen before changing ticks, axes, ...
     bandPlotObject.updateTicks(highSymmetryTicks);
     bandPlotObject.myChart.xAxis[0].setExtremes(0, currentXOffset);
-    console.log(bandPlotObject.allData[0]);
+
     Y_label = bandPlotObject.allData[0].Y_label;
     if (typeof(Y_label) === 'undefined') {
         Y_label = 'Bands';
