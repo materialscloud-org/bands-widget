@@ -110,6 +110,7 @@ function getValidPointNames(allData) {
 function BandPlot(divID) {
     this.divID = divID;
     this.allData = [];
+    this.allSeries = [];
     this.allColorInfo = [];
     // Keep track of the current path to avoid too many refreshes
     this.currentPath = [];
@@ -117,7 +118,7 @@ function BandPlot(divID) {
     if (typeof(this.myChart) != "undefined") {
         this.myChart.destroy();
     }
-    this.initChart(this.divID);
+    //this.initChart(this.divID);
 
 }
 
@@ -152,12 +153,15 @@ BandPlot.prototype.addBandStructure = function(bandsData, colorInfo) {
 
 };
 
-BandPlot.prototype.initChart = function(divID) {
+BandPlot.prototype.initChart = function() {
     var chartOptions = {
         chart: { type: 'line',
             zoomType: 'xy' },
         credits: {
             enabled: false
+        },
+        boost: {
+            useGPUTranslations: true
         },
         title: { text: '' },
         xAxis: {
@@ -165,13 +169,15 @@ BandPlot.prototype.initChart = function(divID) {
             lineWidth: 0
         }, // will be replaced
         yAxis: { plotLines: [],
-            title: { text: ' ' , useHTML: true}// Leave text non-empty by default so it creates the object
+            title: { text: ' ' , useHTML: true}, // Leave text non-empty by default so it creates the object
+            endOnTick: false,
+            alignTicks: false
         },
         tooltip: { formatter: function(x) { return 'y='+Math.round(this.y*100)/100 + "<br>Drag to zoom"; } },
         legend: { enabled: false },
-        series: [],
+        series: this.allSeries,
         plotOptions: {
-            line:   { animation: true },
+            //line:   { animation: true },
             series: {
                 marker: {
                     states: {
@@ -186,7 +192,7 @@ BandPlot.prototype.initChart = function(divID) {
         }
     };
 
-    this.myChart = Highcharts.chart(divID, chartOptions);
+    this.myChart = Highcharts.chart(this.divID, chartOptions);
 };
 
 BandPlot.prototype.getDefaultPath = function() {
@@ -259,9 +265,9 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
     };
 
     // Clean the plot removing the old bands
-    for (var i = bandPlotObject.myChart.series.length - 1; i>=0 ; i--) {
-        bandPlotObject.myChart.series[i].remove(redraw=false);
-    }
+    // for (var i = bandPlotObject.myChart.series.length - 1; i>=0 ; i--) {
+    //     bandPlotObject.myChart.series[i].remove(redraw=false);
+    // }
 
     // Variable to keep track of the current position along x
     var currentXOffset = 0.0;
@@ -381,7 +387,8 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                             marker: {radius: 0, symbol: "circle"},
                             data: curve
                         };
-                        bandPlotObject.myChart.addSeries(series, redraw = false);
+                        bandPlotObject.allSeries.push(series);
+                        //bandPlotObject.myChart.addSeries(series, redraw = false);
                     });
                 }
                 else {
@@ -413,7 +420,9 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
     });
 
     // Reset the ticks etc.
-    bandPlotObject.myChart.redraw(); // mush happen before changing ticks, axes, ...
+    //bandPlotObject.myChart.redraw(); // mush happen before changing ticks, axes, ...
+    bandPlotObject.initChart();
+
     bandPlotObject.updateTicks(highSymmetryTicks);
     bandPlotObject.myChart.xAxis[0].setExtremes(0, currentXOffset);
 
