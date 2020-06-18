@@ -163,25 +163,7 @@ BandPlot.prototype.initChart = function () {
     var chartOptions = {
         type: 'scatter',
         data: {
-            //labels: ['GAMMA', 'X', 'U', 'K', 'GAMMA', 'L', 'W', 'X'],
             datasets: this.allSeries,
-            /*[
-                    {
-                label: 'My First dataset',
-                backgroundColor: window.chartColors.red,
-                borderColor: window.chartColors.red,
-                data: [
-                    randomScalingFactor(),
-                    randomScalingFactor(),
-                    randomScalingFactor(),
-                    randomScalingFactor(),
-                    randomScalingFactor(),
-                    randomScalingFactor(),
-                    randomScalingFactor()
-                ],
-                fill: false,
-            }
-            ]*/
         },
         options: {
             legend: {
@@ -211,7 +193,7 @@ BandPlot.prototype.initChart = function () {
                         //display : false
                     },
                     ticks: {
-                        maxTicksLimit: 3
+                        //maxTicksLimit: 3
                     },
                     afterBuildTicks: function(scale) {
                         console.log(scale);

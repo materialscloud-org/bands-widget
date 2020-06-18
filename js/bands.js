@@ -67,7 +67,7 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
 }
 
 $( document ).ready(function() {
-    bandPlot("band1", "bandPathTextBox1", ["data/291-modified.json"]);
+    bandPlot("band1", "bandPathTextBox1", ["data/291.json"]);
     //bandPlot("band2", "bandPathTextBox2", ["data/382.json", "data/467.json", "data/291-modified.json"]);
     //bandPlot("band3", "bandPathTextBox3", ["data/291-modified.json", "data/467.json"]);
 
