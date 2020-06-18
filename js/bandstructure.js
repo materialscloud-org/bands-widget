@@ -155,44 +155,108 @@ BandPlot.prototype.addBandStructure = function(bandsData, colorInfo) {
 
 BandPlot.prototype.initChart = function() {
     var chartOptions = {
-        chart: { type: 'line',
-            zoomType: 'xy' },
-        credits: {
-            enabled: false
+        type: 'line',
+        data: {
+            labels: ['GAMMA', 'X', 'U', 'K', 'GAMMA', 'L', 'W', 'X'],
+            datasets: this.allSeries,
+            /*[
+                    {
+                label: 'My First dataset',
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                data: [
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor(),
+                    randomScalingFactor()
+                ],
+                fill: false,
+            }
+            ]*/
         },
-        boost: {
-            useGPUTranslations: true
-        },
-        title: { text: '' },
-        xAxis: {
-            tickPositioner: function() {return[];},
-            lineWidth: 0
-        }, // will be replaced
-        yAxis: { plotLines: [],
-            title: { text: ' ' , useHTML: true}, // Leave text non-empty by default so it creates the object
-            endOnTick: false,
-            alignTicks: false
-        },
-        tooltip: { formatter: function(x) { return 'y='+Math.round(this.y*100)/100 + "<br>Drag to zoom"; } },
-        legend: { enabled: false },
-        series: this.allSeries,
-        plotOptions: {
-            //line:   { animation: true },
-            series: {
-                marker: {
-                    states: {
-                        select: {
-                            fillColor: 'red',
-                            radius: 5,
-                            lineWidth: 0 }
+        options: {
+            legend: {
+                //display: false
+            },
+            responsive: true,
+            title: {
+                display: true,
+                //text: 'Chart.js Line Chart'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        //labelString: 'Month'
                     }
-                },
-                cursor: 'pointer'
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        //labelString: 'Value'
+                    }
+                }]
             }
         }
     };
 
-    this.myChart = Highcharts.chart(this.divID, chartOptions);
+    console.log(this.allSeries);
+    var ctx = document.getElementById(this.divID).getContext('2d');
+    this.myChart = new Chart(ctx, chartOptions);
+
+    /*{
+    chart: { type: 'line',
+        zoomType: 'xy' },
+    credits: {
+        enabled: false
+    },
+    boost: {
+        useGPUTranslations: true
+    },
+    title: { text: '' },
+    xAxis: {
+        tickPositioner: function() {return[];},
+        lineWidth: 0
+    }, // will be replaced
+    yAxis: { plotLines: [],
+        title: { text: ' ' , useHTML: true}, // Leave text non-empty by default so it creates the object
+        endOnTick: false,
+        alignTicks: false
+    },
+    tooltip: { formatter: function(x) { return 'y='+Math.round(this.y*100)/100 + "<br>Drag to zoom"; } },
+    legend: { enabled: false },
+    series: this.allSeries,
+    plotOptions: {
+        //line:   { animation: true },
+        series: {
+            marker: {
+                states: {
+                    select: {
+                        fillColor: 'red',
+                        radius: 5,
+                        lineWidth: 0 }
+                }
+            },
+            cursor: 'pointer'
+        }
+    }
+};
+*/
+
+    //this.myChart = Highcharts.chart(this.divID, chartOptions);
 };
 
 BandPlot.prototype.getDefaultPath = function() {
@@ -363,7 +427,7 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
 
                         zip(xArray, theBand).forEach(function (xy_point) {
                             curve.push(
-                                [xy_point[0] + currentXOffset, xy_point[1]]);
+                                {x: xy_point[0] + currentXOffset, y: xy_point[1]});
                         });
 
                         colorInfo = bandPlotObject.allColorInfo[bandsIdx];
@@ -381,12 +445,22 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
                             lineColor = colorInfo[0]; // Single color when there is no up/down bands
                         }
 
+                        // var series = {
+                        //     name: segmentEdges[0] + "-" + segmentEdges[1] + "." + band_idx,
+                        //     color: lineColor,
+                        //     marker: {radius: 0, symbol: "circle"},
+                        //     data: curve
+                        // };
+                        //
+
                         var series = {
-                            name: segmentEdges[0] + "-" + segmentEdges[1] + "." + band_idx,
-                            color: lineColor,
-                            marker: {radius: 0, symbol: "circle"},
-                            data: curve
+                            label: segmentEdges[0] + "-" + segmentEdges[1] + "." + band_idx,
+                            backgroundColor: lineColor,
+                            borderColor: lineColor,
+                            data: curve,
+                            fill: false
                         };
+
                         bandPlotObject.allSeries.push(series);
                         //bandPlotObject.myChart.addSeries(series, redraw = false);
                     });
@@ -423,14 +497,14 @@ BandPlot.prototype.updateBandPlot = function(bandPath, forceRedraw) {
     //bandPlotObject.myChart.redraw(); // mush happen before changing ticks, axes, ...
     bandPlotObject.initChart();
 
-    bandPlotObject.updateTicks(highSymmetryTicks);
-    bandPlotObject.myChart.xAxis[0].setExtremes(0, currentXOffset);
-
-    Y_label = bandPlotObject.allData[0].Y_label;
-    if (typeof(Y_label) === 'undefined') {
-        Y_label = 'Bands';
-    }
-    bandPlotObject.myChart.yAxis[0].axisTitle.textSetter(Y_label);
+    //bandPlotObject.updateTicks(highSymmetryTicks);
+    // bandPlotObject.myChart.xAxis[0].setExtremes(0, currentXOffset);
+    //
+    // Y_label = bandPlotObject.allData[0].Y_label;
+    // if (typeof(Y_label) === 'undefined') {
+    //     Y_label = 'Bands';
+    // }
+    // bandPlotObject.myChart.yAxis[0].axisTitle.textSetter(Y_label);
 };
 
 // Update both ticks and vertical lines
@@ -456,7 +530,7 @@ BandPlot.prototype.updateTicks = function(ticks) {
         }
 
         // function to prettify strings (in HTML) with the new format defined in SeeK-path
-        var prettifyLabelSeekpathFormat = function(label) {
+        var prettifyLabelFormat = function(label) {
             label = label.replace(/GAMMA/gi, "&Gamma;");
             label = label.replace(/DELTA/gi, "&Delta;");
             label = label.replace(/SIGMA/gi, "&Sigma;");
@@ -509,7 +583,7 @@ BandPlot.prototype.updateTicks = function(ticks) {
             prettifyLabel = prettifyLabelLegacyFormat;
         }
         else {
-            prettifyLabel = prettifyLabelSeekpathFormat;
+            prettifyLabel = prettifyLabelFormat;
         }
 
         // return the prettifier function
@@ -541,6 +615,8 @@ BandPlot.prototype.updateTicks = function(ticks) {
         };
     };
     ////////////////// END OF UTILITY FUNCTIONS ///////////////////
+
+    console.log(bandPlotObject.myChart.scales['x-axis-0'].ticks)
 
     // First, clean the plot lines (vertical lines) and the old ticks
     bandPlotObject.myChart.xAxis[0].removePlotLine();

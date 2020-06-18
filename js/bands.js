@@ -68,11 +68,11 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
 
 $( document ).ready(function() {
     bandPlot("band1", "bandPathTextBox1", ["data/291.json"]);
-    bandPlot("band2", "bandPathTextBox2", ["data/382.json", "data/467.json", "data/291-modified.json"]);
-    bandPlot("band3", "bandPathTextBox3", ["data/291-modified.json", "data/467.json"]);
+    //bandPlot("band2", "bandPathTextBox2", ["data/382.json", "data/467.json", "data/291-modified.json"]);
+    //bandPlot("band3", "bandPathTextBox3", ["data/291-modified.json", "data/467.json"]);
 
     // pass colorInfo to plot bands
-    var colorInfo = ["#e41a1c", tinycolor("#e41a1c").darken(20).toHexString()];
-    bandPlot("band4", "bandPathTextBox4", ["data/291-modified.json", "data/467.json"], colorInfo);
+    //var colorInfo = ["#e41a1c", tinycolor("#e41a1c").darken(20).toHexString()];
+    //bandPlot("band4", "bandPathTextBox4", ["data/291-modified.json", "data/467.json"], colorInfo);
 
 });
