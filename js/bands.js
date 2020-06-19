@@ -16,6 +16,11 @@ function resetDefaultBandPath (textBoxId, plotInfoId) {
     plots[plotInfoId].plotObj.updateBandPlot(plots[plotInfoId].plotObj.getDefaultPath(), true);
 }
 
+//It updates the band graph for to its default path.
+function resetZoom (plotInfoId) {
+    plots[plotInfoId].plotObj.myChart.resetZoom();
+}
+
 // get json data and create band plot
 function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
     plots[bandDivId] = {};

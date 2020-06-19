@@ -123,8 +123,6 @@ function BandPlot(divID) {
     if (typeof (this.myChart) != "undefined") {
         this.myChart.destroy();
     }
-    //this.initChart(this.divID);
-
 }
 
 BandPlot.prototype.addBandStructure = function (bandsData, colorInfo) {
@@ -155,10 +153,9 @@ BandPlot.prototype.addBandStructure = function (bandsData, colorInfo) {
 
     this.allColorInfo.push(colorInfo);
     this.allData.push(bandsData);
-
 };
 
-BandPlot.prototype.initChart = function () {
+BandPlot.prototype.initChart = function (ticksData) {
     var bandPlotObject = this;
     var chartOptions = {
         type: 'scatter',
@@ -169,7 +166,11 @@ BandPlot.prototype.initChart = function () {
             legend: {
                 display: false
             },
+            animation: {
+                duration: 0,
+            },
             responsive: true,
+            maintainAspectRatio: false,
             // title: {
             //     display: true,
             //     //text: 'Chart.js Line Chart'
@@ -193,12 +194,23 @@ BandPlot.prototype.initChart = function () {
                         //display : false
                     },
                     ticks: {
-                        //maxTicksLimit: 3
+                        // change the label of the ticks
+                        callback: function(value, index, values) {
+                            return this.options.customTicks[index].label;
+                        }
                     },
-                    afterBuildTicks: function(scale) {
-                        console.log(scale);
-                        //scale.ticks = ['5', '15', '20'];
-                        return;
+                    // Important to set this, will give access to the
+                    // ticks in the various callbacks.
+                    customTicks: ticksData,
+                    afterBuildTicks: function(axis, ticks) {
+                        // Must return 'filtered' ticks, i.e. a list of
+                        // *positions* of the ticks only. 
+                        // Here I instead just discart the old ticks
+                        // and create new ones. The label
+                        // will be changed in the ticks.callback call.
+                        return axis.options.customTicks.map(
+                            function(tickInfo) {return tickInfo.value}
+                            );
                     }
                 }],
                 yAxes: [{
@@ -214,7 +226,7 @@ BandPlot.prototype.initChart = function () {
             },
             zoom: {
                 enabled: true,
-                mode: "x",
+                mode: "y",
                 drag: true
             }
         }
@@ -300,6 +312,9 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
 
     // Array that will contain [position, label] for each high-symmetry point encountered
     highSymmetryTicks = [];
+
+    // Clean up old series
+    bandPlotObject.allSeries = [];
 
     // Plot each of the segments
     currentPathSpecification.forEach(function (segmentEdges, segment_idx) {
@@ -440,11 +455,25 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
 
     });
 
-    // Reset the ticks etc.
-    //bandPlotObject.myChart.redraw(); // mush happen before changing ticks, axes, ...
-    bandPlotObject.initChart();
+    // Change labels with correct Greek fonts
+    var highSymmetryUpdatedTicks = bandPlotObject.updateTicks(highSymmetryTicks);
 
-    //bandPlotObject.updateTicks(highSymmetryTicks);
+    // map ticks into a list of dictionaries, for ease of use later
+    ticksData = highSymmetryUpdatedTicks.map(function(data, idx) {
+        return {value: data[0], label: data[1]};
+    });
+
+    if (typeof(bandPlotObject.myChart) == 'undefined') {
+        bandPlotObject.initChart(ticksData);
+    }
+    else {
+        // Just update the plot and ticks, do not recreate the whole plot
+        bandPlotObject.myChart.options.scales.xAxes[0].customTicks = ticksData;
+        bandPlotObject.myChart.data.datasets = bandPlotObject.allSeries;  
+        bandPlotObject.myChart.update();  
+    }
+    test = bandPlotObject.myChart;
+
     // bandPlotObject.myChart.xAxis[0].setExtremes(0, currentXOffset);
     //
     // Y_label = bandPlotObject.allData[0].Y_label;
@@ -479,13 +508,41 @@ BandPlot.prototype.updateTicks = function (ticks) {
 
         // function to prettify strings (in HTML) with the new format defined in SeeK-path
         var prettifyLabelFormat = function (label) {
-            label = label.replace(/GAMMA/gi, "&Gamma;");
-            label = label.replace(/DELTA/gi, "&Delta;");
-            label = label.replace(/SIGMA/gi, "&Sigma;");
-            label = label.replace(/LAMBDA/gi, "&Lambda;");
-            label = label.replace(/\-/gi, "&mdash;");
+            label = label.replace(/GAMMA/gi, "Γ");
+            label = label.replace(/DELTA/gi, "Δ");
+            label = label.replace(/SIGMA/gi, "Σ");
+            label = label.replace(/LAMBDA/gi, "Λ");
+            label = label.replace(/\-/gi, "—"); // mdash
             label = label.replace(/_(.)/gi, function (match, p1, offset, string) {
-                return "<sub>" + p1 + "</sub>";
+                // no need to use break since I am returning
+                // I am using Unicode subscript digits due to the lack
+                // of support of ChartJS for HTML
+                switch (p1) {
+                    case "0":
+                        return "₀";
+                    case "1":
+                        return "₁";
+                    case "2":
+                        return "₂";
+                    case "3":
+                        return "₃";
+                    case "4":
+                        return "₄";
+                    case "5":
+                        return "₅";
+                    case "6":
+                        return "₆";
+                    case "7":
+                        return "₇";                        
+                    case "8":
+                        return "₈";
+                    case "9":
+                        return "₉"; 
+                    }
+                // HTML not supported by ChartJS
+                // return "<sub>" + p1 + "</sub>";
+                // As a fallback I just print the number
+                return p1;
             });
             return label;
         };
@@ -493,12 +550,37 @@ BandPlot.prototype.updateTicks = function (ticks) {
         var prettifyLabelLegacyFormat = function (label) {
             // Replace G with Gamma
             if (label == 'G') {
-                label = "&Gamma;";
+                label = "Γ";
             }
-            label = label.replace(/\-/gi, "&mdash;");
+            label = label.replace(/\-/gi, "—"); // mdash
             // Replace digits with their lower-case version
-            label = label.replace(/(\d+)/gi, function (match, p1, offset, string) {
-                return "<sub>" + p1 + "</sub>";
+            label = label.replace(/(\d)/gi, function (match, p1, offset, string) {
+                switch (p1) {
+                    case "0":
+                        return "₀";
+                    case "1":
+                        return "₁";
+                    case "2":
+                        return "₂";
+                    case "3":
+                        return "₃";
+                    case "4":
+                        return "₄";
+                    case "5":
+                        return "₅";
+                    case "6":
+                        return "₆";
+                    case "7":
+                        return "₇";                        
+                    case "8":
+                        return "₈";
+                    case "9":
+                        return "₉"; 
+                }
+                // HTML not supported by ChartJS
+                // return "<sub>" + p1 + "</sub>";
+                // As a fallback I just print the number
+                return p1;                
             });
             return label;
         };
@@ -536,90 +618,18 @@ BandPlot.prototype.updateTicks = function (ticks) {
         }
 
         // return the prettifier function
-        return function () {
-            // If not found returns 'undefined' that does not print anything
-            raw_label = label_info[this.value];
-            if (typeof (raw_label) === 'undefined') {
-                return raw_label;
+        return function (label) {
+            if (typeof (label) === 'undefined') {
+                return label;
             }
-            label = prettifyLabel(raw_label);
-            return label;
-        };
-    };
-
-    // function that returns a function compatible with the tickPositioner of
-    // Highcharts, returning the position of the ticks
-    var tickPositionerBuilder = function (ticks) {
-        var theTickPos = [];
-        for (var i = 0; i < ticks.length; i++) {
-            theTickPos.push(ticks[i][0]);
-        }
-        return function () {
-            // Important to make a copy, the library modifies the array
-            var copyPositions = [];
-            theTickPos.forEach(function (elem) {
-                copyPositions.push(elem);
-            });
-            return copyPositions;
+            newLabel = prettifyLabel(label);
+            return newLabel;
         };
     };
     ////////////////// END OF UTILITY FUNCTIONS ///////////////////
 
-    //console.log(bandPlotObject.myChart.options.scales.xAxes[0].ticks.length, ticks)
-    // console.log("1: ", bandPlotObject.myChart.ticks);
-    //
-    // bandPlotObject.myChart.ticks = [];
-    // bandPlotObject.myChart.ticks.push(0);
-    // bandPlotObject.myChart.ticks.push(50);
-    // bandPlotObject.myChart.ticks.push(100);
-    //
-    // console.log("2: ", bandPlotObject.myChart.ticks);
-
-    /*
-    // First, clean the plot lines (vertical lines) and the old ticks
-    bandPlotObject.myChart.xAxis[0].removePlotLine();
-    for (i = bandPlotObject.myChart.xAxis[0].ticks.length - 1; i >= 0; i--) {
-        bandPlotObject.myChart.xAxis[0].ticks[i].remove();
-    }
-
-    // Compute the tick positions
-    var plotLines = [];
-    var tickPos = [];
-    for (i = 0; i < ticks.length; i++) {
-        tickPos.push(ticks[i][0]);
-        plotLines.push({
-            value: ticks[i][0],
-            color: '#CCCCCC',
-            width: 1
-        });
-    }
-
-    // reset positions (in particular to set the tickPositioner)
-    bandPlotObject.myChart.xAxis[0].setOptions(
-        {
-            plotLines: [],
-            lineWidth: 0,
-            minorGridLineWidth: 0,
-            lineColor: 'transparent',
-            minorTickLength: 0,
-            tickLength: 0,
-            tickPositioner: tickPositionerBuilder(ticks),
-            labels: {
-                useHTML: true,
-                align: "center",
-                style: {fontSize: '16px'}
-            }
-        });
-    // set also the labelFormatter
-    bandPlotObject.myChart.xAxis[0].labelFormatter = labelFormatterBuilder(bandPlotObject.allData, ticks);
-    bandPlotObject.myChart.xAxis[0].setTickPositions();
-    ax = bandPlotObject.myChart.xAxis[0];
-    bandPlotObject.myChart.render();
-    // Important! Do after the render. Put back new vertical plotlines
-    plotLines.forEach(function (plotLine) {
-        bandPlotObject.myChart.xAxis[0].addPlotLine(plotLine);
+    var labelFormatter = labelFormatterBuilder(bandPlotObject.allData, ticks);
+    return ticks.map(function(tick) {
+        return [tick[0], labelFormatter(tick[1])];
     });
-    */
-};
-
-
+}
