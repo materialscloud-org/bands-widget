@@ -210,7 +210,7 @@ BandPlot.prototype.initChart = function (ticksData) {
                         // will be changed in the ticks.callback call.
                         return axis.options.customTicks.map(
                             function(tickInfo) {return tickInfo.value}
-                            );
+                        );
                     }
                 }],
                 yAxes: [{
@@ -419,7 +419,7 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
 
                         var series = {
                             label: segmentEdges[0] + "-" + segmentEdges[1] + "." + band_idx,
-                            backgroundColor: lineColor,
+                            //backgroundColor: lineColor,
                             borderColor: lineColor,
                             data: curve,
                             fill: false,
@@ -428,7 +428,6 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
                         };
 
                         bandPlotObject.allSeries.push(series);
-                        //bandPlotObject.myChart.addSeries(series, redraw = false);
                     });
                 } else {
                     // If we are here, there is a segment, but its path has zero
@@ -469,8 +468,8 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
     else {
         // Just update the plot and ticks, do not recreate the whole plot
         bandPlotObject.myChart.options.scales.xAxes[0].customTicks = ticksData;
-        bandPlotObject.myChart.data.datasets = bandPlotObject.allSeries;  
-        bandPlotObject.myChart.update();  
+        bandPlotObject.myChart.data.datasets = bandPlotObject.allSeries;
+        bandPlotObject.myChart.update();
     }
     test = bandPlotObject.myChart;
 
@@ -533,12 +532,12 @@ BandPlot.prototype.updateTicks = function (ticks) {
                     case "6":
                         return "₆";
                     case "7":
-                        return "₇";                        
+                        return "₇";
                     case "8":
                         return "₈";
                     case "9":
-                        return "₉"; 
-                    }
+                        return "₉";
+                }
                 // HTML not supported by ChartJS
                 // return "<sub>" + p1 + "</sub>";
                 // As a fallback I just print the number
@@ -571,16 +570,16 @@ BandPlot.prototype.updateTicks = function (ticks) {
                     case "6":
                         return "₆";
                     case "7":
-                        return "₇";                        
+                        return "₇";
                     case "8":
                         return "₈";
                     case "9":
-                        return "₉"; 
+                        return "₉";
                 }
                 // HTML not supported by ChartJS
                 // return "<sub>" + p1 + "</sub>";
                 // As a fallback I just print the number
-                return p1;                
+                return p1;
             });
             return label;
         };

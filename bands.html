@@ -20,7 +20,7 @@
   <div id="band-metadata">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
           <h3>1. Single band structure with default colors</h3>
 
           <div>
@@ -29,7 +29,7 @@
           or https://stackoverflow.com/questions/40263891/canvas-static-height-chartjs
           height can then be specified in the canvas
           -->
-          <canvas id="band1" height="300px">
+          <canvas id="band1" height="400px">
           </canvas>
           </div>
 
@@ -44,6 +44,35 @@
           </button>
           <button type="button" class="btn btn-primary btn-md reset-path-btn" title="Reset zoom"
                   onclick="resetZoom('band1')">
+            Reset zoom
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h3>2. Single band structure with default colors</h3>
+
+          <div>
+          <!-- it's essential to put an empty div around the canvas when using a non-forced aspect ratio:
+          https://stackoverflow.com/questions/45427088/chart-js-is-always-increasing-height-on-chart-resize
+          or https://stackoverflow.com/questions/40263891/canvas-static-height-chartjs
+          height can then be specified in the canvas
+          -->
+          <canvas id="band2" height="400px">
+          </canvas>
+          </div>
+
+          <p class="input-group input-group-div">
+            <span class="input-group-addon">Edit the path: </span>
+            <input id="bandPathTextBox2" class="input-group form-control input-path"
+                   autocomplete="off" onkeyup="changeBandPath('bandPathTextBox2', 'band2')">
+          </p>
+          <button type="button" class="btn btn-primary btn-md reset-path-btn" title="Reset to default path"
+                  onclick="resetDefaultBandPath('bandPathTextBox2', 'band2')">
+            Reset default path
+          </button>
+          <button type="button" class="btn btn-primary btn-md reset-path-btn" title="Reset zoom"
+                  onclick="resetZoom('band2')">
             Reset zoom
           </button>
         </div>

@@ -25,6 +25,9 @@ function resetZoom (plotInfoId) {
 function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
     plots[bandDivId] = {};
 
+    var b = window.performance.now();
+    console.log("start time: plotting band plot: current time => ", bandDivId, b);
+
     // create band plot object
     var theBandPlot = new BandPlot(bandDivId);
     var colorDict;
@@ -69,10 +72,14 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
 
     $(theTextBox).data('bs.tooltip', false).tooltip({title: helperString, html: true})
                             .tooltip('show'); // Open the tooltip
+
+    console.log("end time: plotting band plot: current time, total time => ", bandDivId, window.performance.now(), window.performance.now() - b);
 }
 
 $( document ).ready(function() {
-    bandPlot("band1", "bandPathTextBox1", ["data/291.json"]);
+    bandPlot("band1", "bandPathTextBox1", ["data/b2y_dft.json", "data/b2y_entangled_SM_02.json"]);
+    bandPlot("band2", "bandPathTextBox2", ["data/b2y_dft.json", "data/b2y_entangled_SM_02.json"]);
+
     //bandPlot("band2", "bandPathTextBox2", ["data/382.json", "data/467.json", "data/291-modified.json"]);
     //bandPlot("band3", "bandPathTextBox3", ["data/291-modified.json", "data/467.json"]);
 
