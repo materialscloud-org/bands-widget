@@ -212,6 +212,14 @@ BandPlot.prototype.initChart = function (ticksData) {
                 }],
                 yAxes: [{
                     display: true,
+                    ticks: {
+                        // change the label of the ticks
+                        callback: function(value, index, values) {
+                            if (index != 0 && index != values.length -1) {
+                                return value;
+                            }
+                        }
+                    },
                     scaleLabel: {
                         display: true
                     },

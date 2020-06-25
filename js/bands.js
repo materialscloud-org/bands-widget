@@ -21,6 +21,44 @@ function resetZoom (plotInfoId) {
     plots[plotInfoId].plotObj.myChart.resetZoom();
 }
 
+// Swiches to drag-to-zoom mode
+function dragToZoom (plotInfoId, zoomButtonId, panButtonId) {
+    $("#"+zoomButtonId).addClass('btn-primary');
+    $("#"+zoomButtonId).removeClass('btn-default');
+    $("#"+panButtonId).addClass('btn-default');
+    $("#"+panButtonId).removeClass('btn-primary');
+
+    plots[plotInfoId].plotObj.myChart.options.pan = {
+        enabled: false,
+        mode: "y"
+    };
+    plots[plotInfoId].plotObj.myChart.options.zoom = {
+        enabled: true,
+        mode: "y",
+        drag: true
+    };
+    plots[plotInfoId].plotObj.myChart.update();
+}
+
+// Swiches to drag-to-zoom mode
+function dragToPan (plotInfoId, zoomButtonId, panButtonId) {
+    $("#"+panButtonId).addClass('btn-primary');
+    $("#"+panButtonId).removeClass('btn-default');
+    $("#"+zoomButtonId).addClass('btn-default');
+    $("#"+zoomButtonId).removeClass('btn-primary');
+
+    plots[plotInfoId].plotObj.myChart.options.pan = {
+        enabled: true,
+        mode: "y"
+    };
+    plots[plotInfoId].plotObj.myChart.options.zoom = {
+        enabled: false,
+        mode: "y",
+        drag: true
+    };
+    plots[plotInfoId].plotObj.myChart.update();
+}
+
 // get json data and create band plot
 function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
     plots[bandDivId] = {};
