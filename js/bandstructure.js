@@ -160,39 +160,36 @@ BandPlot.prototype.initChart = function (ticksData) {
     var chartOptions = {
         type: 'scatter',
         data: {
-            datasets: this.allSeries,
+            datasets: this.allSeries
         },
         options: {
             legend: {
                 display: false
             },
             animation: {
-                duration: 0,
+                duration: 0
             },
             responsive: true,
             maintainAspectRatio: false,
-            // title: {
-            //     display: true,
-            //     //text: 'Chart.js Line Chart'
-            // },
-            // tooltips: {
-            //     mode: 'index',
-            //     intersect: false,
-            // },
-            // hover: {
-            //     mode: 'nearest',
-            //     intersect: true
-            // },
+            tooltips: {
+                displayColors: false,
+                backgroundColor: "#fcfcfc",
+                borderColor: "#1565c0",
+                borderWidth: 1,
+                bodyFontColor: "black",
+                bodySpacing: 6,
+                cornerRadius: 0,
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        console.log("::", tooltipItem);
+                        var label = "y= " + tooltipItem.yLabel.toFixed(2);
+                        return [label, "Drag to zoom"];
+                    }
+                }
+            },
             scales: {
                 xAxes: [{
                     display: true,
-                    scaleLabel: {
-                        //display: true,
-                        //labelString: 'Month'
-                    },
-                    gridLines: {
-                        //display : false
-                    },
                     ticks: {
                         // change the label of the ticks
                         callback: function(value, index, values) {
@@ -209,19 +206,18 @@ BandPlot.prototype.initChart = function (ticksData) {
                         // and create new ones. The label
                         // will be changed in the ticks.callback call.
                         return axis.options.customTicks.map(
-                            function(tickInfo) {return tickInfo.value}
+                            function(tickInfo) {return tickInfo.value;}
                         );
                     }
                 }],
                 yAxes: [{
                     display: true,
                     scaleLabel: {
-                        display: true,
-                        //labelString: 'Value'
+                        display: true
                     },
                     gridLines: {
                         display : false
-                    },
+                    }
                 }]
             },
             zoom: {
@@ -235,6 +231,13 @@ BandPlot.prototype.initChart = function (ticksData) {
     var ctx = document.getElementById(this.divID).getContext('2d');
     bandPlotObject.myChart = new Chart(ctx, chartOptions);
 
+};
+
+BandPlot.prototype.setYLimit = function(ymin, ymax) {
+    this.myChart.options.scales.yAxes[0].ticks.min = ymin;
+    this.myChart.options.scales.yAxes[0].ticks.max = ymax;
+
+    this.myChart.update();
 };
 
 BandPlot.prototype.getDefaultPath = function () {
@@ -469,17 +472,18 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
         // Just update the plot and ticks, do not recreate the whole plot
         bandPlotObject.myChart.options.scales.xAxes[0].customTicks = ticksData;
         bandPlotObject.myChart.data.datasets = bandPlotObject.allSeries;
-        bandPlotObject.myChart.update();
     }
-    test = bandPlotObject.myChart;
 
-    // bandPlotObject.myChart.xAxis[0].setExtremes(0, currentXOffset);
-    //
-    // Y_label = bandPlotObject.allData[0].Y_label;
-    // if (typeof(Y_label) === 'undefined') {
-    //     Y_label = 'Bands';
-    // }
-    // bandPlotObject.myChart.yAxis[0].axisTitle.textSetter(Y_label);
+    bandPlotObject.myChart.options.scales.xAxes[0].ticks.min = 0;
+    bandPlotObject.myChart.options.scales.xAxes[0].ticks.max = currentXOffset;
+
+    Y_label = bandPlotObject.allData[0].Y_label;
+    if (typeof(Y_label) === 'undefined') {
+        Y_label = 'Electronic bands (eV)';
+    }
+    bandPlotObject.myChart.options.scales.yAxes[0].scaleLabel.labelString = Y_label;
+
+    bandPlotObject.myChart.update();
 };
 
 // Update both ticks and vertical lines
@@ -631,4 +635,4 @@ BandPlot.prototype.updateTicks = function (ticks) {
     return ticks.map(function(tick) {
         return [tick[0], labelFormatter(tick[1])];
     });
-}
+};

@@ -60,6 +60,7 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
 
     // update band structure data for plotting
     theBandPlot.updateBandPlot();
+    theBandPlot.setYLimit(-20, 32);
 
     var theTextBox = document.getElementById(bandPathTextBoxId);
     theTextBox.value = getPathStringFromPathArray(theBandPlot.getDefaultPath());
@@ -77,8 +78,8 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
 }
 
 $( document ).ready(function() {
-    bandPlot("band1", "bandPathTextBox1", ["data/b2y_dft.json", "data/b2y_entangled_SM_02.json"]);
-    bandPlot("band2", "bandPathTextBox2", ["data/b2y_dft.json", "data/b2y_entangled_SM_02.json"]);
+    bandPlot("band1", "bandPathTextBox1", ["data/b2y_entangled_SM_02.json", "data/b2y_dft.json"]);
+    //bandPlot("band2", "bandPathTextBox2", ["data/b2y_dft.json", "data/b2y_entangled_SM_02.json"]);
 
     //bandPlot("band2", "bandPathTextBox2", ["data/382.json", "data/467.json", "data/291-modified.json"]);
     //bandPlot("band3", "bandPathTextBox3", ["data/291-modified.json", "data/467.json"]);
