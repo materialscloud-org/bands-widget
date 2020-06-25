@@ -424,6 +424,7 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
                             label: segmentEdges[0] + "-" + segmentEdges[1] + "." + band_idx,
                             //backgroundColor: lineColor,
                             borderColor: lineColor,
+                            borderWidth: 2,
                             data: curve,
                             fill: false,
                             showLine: true,
