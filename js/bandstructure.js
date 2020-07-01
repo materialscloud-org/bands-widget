@@ -112,13 +112,15 @@ function getValidPointNames(allData) {
 
 
 /////////////// MAIN CLASS DEFINITION /////////////////
-function BandPlot(divID) {
+function BandPlot(divID, fermiEnergy, yLimit) {
     this.divID = divID;
     this.allData = [];
     this.allSeries = [];
     this.allColorInfo = [];
     // Keep track of the current path to avoid too many refreshes
     this.currentPath = [];
+    this.fermiEnergy = fermiEnergy;
+    this.yLimit = yLimit;
 
     if (typeof (this.myChart) != "undefined") {
         this.myChart.destroy();
@@ -181,7 +183,6 @@ BandPlot.prototype.initChart = function (ticksData) {
                 cornerRadius: 0,
                 callbacks: {
                     label: function (tooltipItem, data) {
-                        console.log("::", tooltipItem);
                         var label = "y= " + tooltipItem.yLabel.toFixed(2);
                         return [label, "Drag to zoom"];
                     }
@@ -215,7 +216,7 @@ BandPlot.prototype.initChart = function (ticksData) {
                     ticks: {
                         // change the label of the ticks
                         callback: function(value, index, values) {
-                            if (index != 0 && index != values.length -1) {
+                            if (index !== 0 && index != values.length -1) {
                                 return value;
                             }
                         }
@@ -236,16 +237,20 @@ BandPlot.prototype.initChart = function (ticksData) {
         }
     };
 
+    if(bandPlotObject.yLimit){
+        chartOptions.options.scales.yAxes[0].ticks.min = bandPlotObject.yLimit.ymin;
+        chartOptions.options.scales.yAxes[0].ticks.max = bandPlotObject.yLimit.ymax;
+    }
+    if(bandPlotObject.xLimit){
+        chartOptions.options.scales.xAxes[0].ticks.min = bandPlotObject.xLimit.xmin;
+        chartOptions.options.scales.xAxes[0].ticks.max = bandPlotObject.xLimit.xmax;
+    }
+    if(bandPlotObject.yLabel)
+        chartOptions.options.scales.yAxes[0].scaleLabel.labelString = bandPlotObject.yLabel;
+
     var ctx = document.getElementById(this.divID).getContext('2d');
     bandPlotObject.myChart = new Chart(ctx, chartOptions);
 
-};
-
-BandPlot.prototype.setYLimit = function(ymin, ymax) {
-    this.myChart.options.scales.yAxes[0].ticks.min = ymin;
-    this.myChart.options.scales.yAxes[0].ticks.max = ymax;
-
-    this.myChart.update();
 };
 
 BandPlot.prototype.getDefaultPath = function () {
@@ -410,6 +415,15 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
                             theBand = band;
                         }
 
+                        // substract fermi energy from all bands
+                        if(bandPlotObject.fermiEnergy){
+                            var tmp = theBand.map( function(value) {
+                                return value - bandPlotObject.fermiEnergy;
+                            } );
+                            theBand = tmp;
+                        }
+
+
                         zip(xArray, theBand).forEach(function (xy_point) {
                             curve.push(
                                 {x: xy_point[0] + currentXOffset, y: xy_point[1]});
@@ -474,6 +488,14 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
         return {value: data[0], label: data[1]};
     });
 
+
+    bandPlotObject.xLimit = {"xmin": 0, "xmax": currentXOffset};
+
+    bandPlotObject.YLabel = bandPlotObject.allData[0].Y_label;
+    if (typeof(bandPlotObject.YLabel) === 'undefined') {
+        bandPlotObject.YLabel = 'Electronic bands (eV)';
+    }
+
     if (typeof(bandPlotObject.myChart) == 'undefined') {
         bandPlotObject.initChart(ticksData);
     }
@@ -481,18 +503,10 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
         // Just update the plot and ticks, do not recreate the whole plot
         bandPlotObject.myChart.options.scales.xAxes[0].customTicks = ticksData;
         bandPlotObject.myChart.data.datasets = bandPlotObject.allSeries;
+        bandPlotObject.options.scales.xAxes[0].ticks.max = currentXOffset;
+
+        bandPlotObject.myChart.update();
     }
-
-    bandPlotObject.myChart.options.scales.xAxes[0].ticks.min = 0;
-    bandPlotObject.myChart.options.scales.xAxes[0].ticks.max = currentXOffset;
-
-    Y_label = bandPlotObject.allData[0].Y_label;
-    if (typeof(Y_label) === 'undefined') {
-        Y_label = 'Electronic bands (eV)';
-    }
-    bandPlotObject.myChart.options.scales.yAxes[0].scaleLabel.labelString = Y_label;
-
-    bandPlotObject.myChart.update();
 };
 
 // Update both ticks and vertical lines

@@ -67,7 +67,7 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
     console.log("start time: plotting band plot: current time => ", bandDivId, b);
 
     // create band plot object
-    var theBandPlot = new BandPlot(bandDivId);
+    var theBandPlot = new BandPlot(bandDivId, 5.1, {"ymin": -20, "ymax": 32});
     var colorDict;
 
     // add data for every band structure
@@ -98,7 +98,6 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
 
     // update band structure data for plotting
     theBandPlot.updateBandPlot();
-    theBandPlot.setYLimit(-20, 32);
 
     var theTextBox = document.getElementById(bandPathTextBoxId);
     theTextBox.value = getPathStringFromPathArray(theBandPlot.getDefaultPath());
