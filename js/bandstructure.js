@@ -121,6 +121,7 @@ function BandPlot(divID, fermiEnergy, yLimit) {
     this.currentPath = [];
     this.fermiEnergy = fermiEnergy;
     this.yLimit = yLimit;
+    this.yLabel = "";
 
     if (typeof (this.myChart) != "undefined") {
         this.myChart.destroy();
@@ -158,7 +159,9 @@ BandPlot.prototype.addBandStructure = function (bandsData, colorInfo) {
 };
 
 BandPlot.prototype.initChart = function (ticksData) {
+
     var bandPlotObject = this;
+
     var chartOptions = {
         type: 'scatter',
         data: {
@@ -491,12 +494,12 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
 
     bandPlotObject.xLimit = {"xmin": 0, "xmax": currentXOffset};
 
-    bandPlotObject.YLabel = bandPlotObject.allData[0].Y_label;
-    if (typeof(bandPlotObject.YLabel) === 'undefined') {
-        bandPlotObject.YLabel = 'Electronic bands (eV)';
+    bandPlotObject.yLabel = bandPlotObject.allData[0].Y_label;
+    if (bandPlotObject.yLabel === undefined) {
+        bandPlotObject.yLabel = 'Electronic bands (eV)';
     }
 
-    if (typeof(bandPlotObject.myChart) == 'undefined') {
+    if (bandPlotObject.myChart === undefined) {
         bandPlotObject.initChart(ticksData);
     }
     else {
