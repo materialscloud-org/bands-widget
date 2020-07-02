@@ -187,7 +187,7 @@ BandPlot.prototype.initChart = function (ticksData) {
                 callbacks: {
                     label: function (tooltipItem, data) {
                         var label = "y= " + tooltipItem.yLabel.toFixed(2);
-                        return [label, "Drag to zoom"];
+                        return [label, "Drag to zoom or pan"];
                     }
                 }
             },
