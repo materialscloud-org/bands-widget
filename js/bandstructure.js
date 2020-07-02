@@ -503,7 +503,7 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
         // Just update the plot and ticks, do not recreate the whole plot
         bandPlotObject.myChart.options.scales.xAxes[0].customTicks = ticksData;
         bandPlotObject.myChart.data.datasets = bandPlotObject.allSeries;
-        bandPlotObject.options.scales.xAxes[0].ticks.max = currentXOffset;
+        bandPlotObject.myChart.options.scales.xAxes[0].ticks.max = currentXOffset;
 
         bandPlotObject.myChart.update();
     }
