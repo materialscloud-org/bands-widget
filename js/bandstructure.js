@@ -78,12 +78,12 @@ function getPathArrayFromPathString(pathString) {
     var independentPieces = pathString.split("|");
     independentPieces.forEach(function (stringPiece) {
         // Split by dash
-        pointsStrings = stringPiece.split('-');
+        var pointsStrings = stringPiece.split('-');
         // remove unneeded spaces, remove empty items (so e.g. X--Y still works as X-Y)
-        pointsTrimmedStrings = pointsStrings.map(function (pointName) {
+        var pointsTrimmedStrings = pointsStrings.map(function (pointName) {
             return pointName.trim();
         });
-        points = pointsTrimmedStrings.filter(function (pointName) {
+        var points = pointsTrimmedStrings.filter(function (pointName) {
             return pointName !== "";
         });
 
@@ -258,7 +258,7 @@ BandPlot.prototype.initChart = function (ticksData) {
 
 BandPlot.prototype.getDefaultPath = function () {
     if (this.allData.length > 0) {
-        currentPathSpecification = this.allData[0].path;
+        var currentPathSpecification = this.allData[0].path;
         return currentPathSpecification; // use the default path from the first band structure
     } else {
         return [];
@@ -269,6 +269,7 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
 
     // used later to reference the object inside subfunctions
     var bandPlotObject = this;
+    var currentPathSpecification = null;
 
     if (forceRedraw === undefined)
         forceRedraw = false;
@@ -330,7 +331,7 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
     var currentXOffset = 0.0;
 
     // Array that will contain [position, label] for each high-symmetry point encountered
-    highSymmetryTicks = [];
+    var highSymmetryTicks = [];
 
     // Clean up old series
     bandPlotObject.allSeries = [];
@@ -379,8 +380,8 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
 
                 // Should I use two colors? (By default, no). This info is returned
                 // (in new versions of AiiDA) for each segment
-                twoBandTypes = segmentInfo.segment.two_band_types || false;
-                numBands = segmentInfo.segment.values.length;
+                var twoBandTypes = segmentInfo.segment.two_band_types || false;
+                var numBands = segmentInfo.segment.values.length;
 
                 if (thisSegmentLength === null) {
                     // I set the length from the first segment I find
@@ -432,7 +433,8 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
                                 {x: xy_point[0] + currentXOffset, y: xy_point[1]});
                         });
 
-                        colorInfo = bandPlotObject.allColorInfo[bandsIdx];
+                        var colorInfo = bandPlotObject.allColorInfo[bandsIdx];
+                        var lineColor = null;
                         if (twoBandTypes) {
                             if (band_idx * 2 < numBands) {
                                 // Color for the first half of bands
@@ -487,7 +489,7 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
     var highSymmetryUpdatedTicks = bandPlotObject.updateTicks(highSymmetryTicks);
 
     // map ticks into a list of dictionaries, for ease of use later
-    ticksData = highSymmetryUpdatedTicks.map(function(data, idx) {
+    var ticksData = highSymmetryUpdatedTicks.map(function(data, idx) {
         return {value: data[0], label: data[1]};
     });
 
@@ -511,6 +513,22 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
         bandPlotObject.myChart.update();
     }
 };
+
+// Call the reset zoom function of the chart, but also make sure the x ticks are correctly reset
+BandPlot.prototype.resetZoom = function() {
+    var bandPlotObject = this;
+    
+    bandPlotObject.myChart.resetZoom();
+
+    // Sometimes these are wrongly set (e.g. if I:
+    // 1. zoom
+    // 2. change the path to something shorter than the default
+    // 3. reset the Zoom). 
+    // So, we reset them according to the current path
+    bandPlotObject.myChart.options.scales.xAxes[0].ticks.min = bandPlotObject.xLimit.xmin;
+    bandPlotObject.myChart.options.scales.xAxes[0].ticks.max = bandPlotObject.xLimit.xmax;
+    bandPlotObject.myChart.update();  
+}
 
 // Update both ticks and vertical lines
 // ticks should be in the format [xpos, label]
@@ -651,7 +669,7 @@ BandPlot.prototype.updateTicks = function (ticks) {
             if (typeof (label) === 'undefined') {
                 return label;
             }
-            newLabel = prettifyLabel(label);
+            var newLabel = prettifyLabel(label);
             return newLabel;
         };
     };

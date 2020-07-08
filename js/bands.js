@@ -18,7 +18,8 @@ function resetDefaultBandPath (textBoxId, plotInfoId) {
 
 //It updates the band graph for to its default path.
 function resetZoom (plotInfoId, textBoxId) {
-    plots[plotInfoId].plotObj.myChart.resetZoom();
+    // Note: call the resetZoom of he plotObj, not directly the call of the plotObj.myChart
+    plots[plotInfoId].plotObj.resetZoom();
 }
 
 // Swiches to drag-to-zoom mode
