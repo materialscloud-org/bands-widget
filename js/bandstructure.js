@@ -176,7 +176,7 @@ BandPlot.prototype.initChart = function (ticksData) {
             },
             hover: {
                 animationDuration: 0, // duration of animations when hovering an item
-                mode: null, // disable any hovering effects
+                mode: null // disable any hovering effects
             },
             responsiveAnimationDuration: 0, // animation duration after a resize
             elements: {
@@ -451,7 +451,7 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
                             data: curve,
                             fill: false,
                             showLine: true,
-                            pointRadius: 0,
+                            pointRadius: 0
                         };
 
                         bandPlotObject.allSeries.push(series);
@@ -524,7 +524,7 @@ BandPlot.prototype.resetZoom = function() {
     bandPlotObject.myChart.options.scales.xAxes[0].ticks.min = bandPlotObject.xLimit.xmin;
     bandPlotObject.myChart.options.scales.xAxes[0].ticks.max = bandPlotObject.xLimit.xmax;
     bandPlotObject.myChart.update();  
-}
+};
 
 // Update both ticks and vertical lines
 // ticks should be in the format [xpos, label]
