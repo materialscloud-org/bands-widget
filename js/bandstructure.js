@@ -174,23 +174,19 @@ BandPlot.prototype.initChart = function (ticksData) {
             animation: {
                 duration: 0
             },
-            responsive: true,
-            maintainAspectRatio: false,
-            tooltips: {
-                displayColors: false,
-                backgroundColor: "#fcfcfc",
-                borderColor: "#1565c0",
-                borderWidth: 1,
-                bodyFontColor: "black",
-                bodySpacing: 6,
-                cornerRadius: 0,
-                callbacks: {
-                    label: function (tooltipItem, data) {
-                        var label = "y= " + tooltipItem.yLabel.toFixed(2);
-                        return [label, "Drag to zoom or pan"];
-                    }
+            hover: {
+                animationDuration: 0, // duration of animations when hovering an item
+                mode: null, // disable any hovering effects
+            },
+            responsiveAnimationDuration: 0, // animation duration after a resize
+            elements: {
+                line: {
+                    tension: 0 // disables bezier curves, for performance
                 }
             },
+            responsive: true,
+            maintainAspectRatio: false,
+            tooltips: false,
             scales: {
                 xAxes: [{
                     display: true,
@@ -455,7 +451,7 @@ BandPlot.prototype.updateBandPlot = function (bandPath, forceRedraw) {
                             data: curve,
                             fill: false,
                             showLine: true,
-                            pointRadius: 0
+                            pointRadius: 0,
                         };
 
                         bandPlotObject.allSeries.push(series);
