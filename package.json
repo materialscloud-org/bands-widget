@@ -1,6 +1,6 @@
 {
-  "name": "mcloud-bands-widget",
-  "repository": "https://github.com/materialscloud-org/mcloud-bands-widget.git",
+  "name": "bands-widget",
+  "repository": "https://github.com/materialscloud-org/bands-widget.git",
   "version": "1.1.0",
   "description": "It is a small library to plot single/multiple bands structures together in single plot.",
   "display-name": "Materials Cloud bands structure widget",
@@ -8,24 +8,30 @@
   "author": "Materials Cloud team <info@materialscloud.org>",
   "keywords": [
     "bands",
-    "widget",
-    "mcloud-bands-structure",
-    "mcloud-bands-widget"
+    "bands-structure",
+    "bands-widget"
   ],
   "engines": {
     "node": "*"
   },
   "dependencies": {
+    "bootstrap": "^3.3.7",
+    "chart.js": "^2.9.3",
+    "chartjs-plugin-zoom": "^0.7.7",
+    "hammerjs": "^2.0.8",
     "jquery": "^3.5.1",
     "jquery-ui": "^1.12.1",
-    "bootstrap": "^3.3.7",
-    "tinycolor": "*",
-    "highcharts": "^8.1.0"
+    "tinycolor": "*"
   },
   "devDependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-minify": "^0.5.1",
     "grunt": "~0.4.1",
-    "grunt-contrib-concat": "~0.1.3",
-    "grunt-contrib-jshint": "~0.1.1",
-    "grunt-contrib-uglify": "~0.2.0"
+    "grunt-babel": "^8.0.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-concat": "^0.1.3",
+    "grunt-contrib-jshint": "~0.1.1"
   }
 }
