@@ -29,7 +29,7 @@ module.exports = function(grunt) {
                     // 'js/Chart.min.js',
                     // 'js/hammer.min.js',
                     // 'js/chartjs-plugin-zoom.min.js',
-                    'js/bandstructure.min.js'],
+                    'dist/bandstructure.min.js'],
                 dest: 'dist/bandstructure.min.js'
             }
         },
@@ -51,7 +51,7 @@ module.exports = function(grunt) {
             compile: {
                 options: {
                     sourceMap: true,
-                    presets: ['@babel/preset-env', 'babel-preset-es2015']
+                    presets: ['@babel/preset-env', 'babel-preset-es2015', 'minify']
                 },
                 dist: {
                     files: {
@@ -79,13 +79,13 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    //grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-babel');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    //grunt.loadNpmTasks('grunt-babel');
 
     grunt.registerTask('build', [
         "clean",
         'jshint',
-        'babel',
+        'uglify',
         'concat'
     ]);
 
