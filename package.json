@@ -6,6 +6,7 @@
   "display-name": "Materials Cloud bands structure widget",
   "license": "MIT",
   "author": "Materials Cloud team <info@materialscloud.org>",
+  "main": "dist/bandstructure.min.js",
   "keywords": [
     "bands",
     "bands-structure",
