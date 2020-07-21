@@ -22,7 +22,7 @@ shown below.
 
 #### Output:
 
-![bands structure](https://github.com/materialscloud-org/bands-widget/tree/master/images/bands.png)
+![bands structure](https://raw.githubusercontent.com/materialscloud-org/bands-widget/master/images/bands.png?token=AF67DNFJTHXB3NYRN4SSWUK7D7MIS)
 
 1. bands.html
 
