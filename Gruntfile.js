@@ -25,10 +25,10 @@ module.exports = function(grunt) {
             },
             dist: {
                 src: [
-                    // 'js/tinycolor.min.js',
-                    // 'js/Chart.min.js',
-                    // 'js/hammer.min.js',
-                    // 'js/chartjs-plugin-zoom.min.js',
+                     'js/chartjs.min.js',
+                     'js/tinycolor.min.js',
+                     'js/hammer.min.js',
+                     'js/chartjs-plugin-zoom.min.js',
                     'dist/bandstructure.min.js'],
                 dest: 'dist/bandstructure.min.js'
             }
