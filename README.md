@@ -208,7 +208,7 @@ function bandPlot(bandDivId, bandPathTextBoxId, dataFilePaths, colorInfo) {
     var theTextBox = document.getElementById(bandPathTextBoxId);
     theTextBox.value = getPathStringFromPathArray(theBandPlot.getDefaultPath());
 
-    var helperString = "Use - to define a segment<br>Use | to split the path.<br>Valid point names:<br>";
+    var helperString = "Use - to define a segment<br>Use | to split the path.<br>Valid k-point names:<br>";
     var validPoints = getValidPointNames(theBandPlot.allData);
     helperString += validPoints.join(', ');
 
