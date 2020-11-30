@@ -1,9 +1,12 @@
 {
   "name": "bands-widget",
-  "repository": "https://github.com/materialscloud-org/bands-widget.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/materialscloud-org/bands-widget.git"
+  },
   "version": "1.1.0",
-  "description": "It is a small library to plot single/multiple bands structures together in single plot.",
-  "display-name": "Materials Cloud bands structure widget",
+  "description": "A small library to plot single/multiple band structures together in single plot.",
+  "display-name": "Materials Cloud band structure widget",
   "license": "MIT",
   "author": "Materials Cloud team <info@materialscloud.org>",
   "main": "dist/bandstructure.min.js",
@@ -30,5 +33,15 @@
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-jshint": "^3.0.0",
     "grunt-contrib-uglify": "^5.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/materialscloud-org/bands-widget/issues"
+  },
+  "homepage": "https://github.com/materialscloud-org/bands-widget#readme",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
