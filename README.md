@@ -1,23 +1,19 @@
-Materials Cloud bands structure widget
+Materials Cloud band structures widget
 =======================================
 
-Library to plot bands structures using chartjs library.
+Library to plot band structures using chartjs library.
 
 ## Installation
 
-To include it via ```<script>```tag, make sure to include:
+Include it in your code via the ```<script>```tag:
 
 ```javascript
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3"></script>
-<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
-<script src="js/tinycolor.min.js"></script>
 <script src="dist/bandstructure.min.js"></script>
 ```
 
 ## Configuration
 
-To plot below band structure, create the files bands.html and bands.js as
+To plot the band structure below, create the files bands.html and bands.js as
 shown below.
 
 #### Output:
@@ -91,10 +87,6 @@ shown below.
 <script src="js/jquery-ui.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 
-<script src="js/tinycolor.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3"></script>
-<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.7"></script>
 <script src="dist/bandstructure.min.js"></script>
 
 <script src="js/bands.js"></script>
