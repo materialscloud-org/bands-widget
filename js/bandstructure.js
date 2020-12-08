@@ -633,7 +633,7 @@ BandPlot.prototype.updateTicks = function (ticks) {
         // If there is NOT "GAMMA" and there is "G", it's the legacy format
         // If there is not even "G", then to be safe I use the seekpath format
         // that for instance does not make numbers subscripts by default
-        var validNames = getValidPointNames([allData]);
+        var validNames = getValidPointNames(allData);
         var legacyFormat = false; // some default, should never be used anyway
         if (validNames.findIndex(function (label) {
             return label == "GAMMA";
