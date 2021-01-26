@@ -4,7 +4,7 @@
     "type": "git",
     "url": "git+https://github.com/materialscloud-org/bands-widget.git"
   },
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A small library to plot single/multiple band structures together in a single plot.",
   "display-name": "Materials Cloud band structure widget",
   "license": "MIT",
